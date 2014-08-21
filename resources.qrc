@@ -2,6 +2,6 @@
     <qresource prefix="/images">
         <file alias="protocol">Resources/protocol_jeedom.jpg</file>
         <file alias="panel">Resources/panel1.jpg</file>
-        <file alias="logo">Resources/jeedom.jpg</file>
+        <file alias="logo">Resources/logo-jeedom-petit-nom-couleur_64x68.png</file>
     </qresource>
 </RCC>

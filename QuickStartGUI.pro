@@ -15,12 +15,16 @@ TEMPLATE = app
 SOURCES += main.cpp\
     quickstartwizard.cpp \
     intropage.cpp \
-    searchpage.cpp
+    searchpage.cpp \
+    advancedsearchpage.cpp \
+    conclusionpage.cpp
 
 HEADERS  += \
     quickstartwizard.h \
     intropage.h \
-    searchpage.h
+    searchpage.h \
+    advancedsearchpage.h \
+    conclusionpage.h
 
 FORMS    +=
 
