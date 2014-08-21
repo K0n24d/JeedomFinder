@@ -1,0 +1,7 @@
+<RCC>
+    <qresource prefix="/images">
+        <file alias="protocol">Resources/protocol_jeedom.jpg</file>
+        <file alias="panel">Resources/panel1.jpg</file>
+        <file alias="logo">Resources/jeedom.jpg</file>
+    </qresource>
+</RCC>
