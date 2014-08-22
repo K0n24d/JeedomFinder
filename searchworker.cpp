@@ -1,27 +1,35 @@
-#include "searchthread.h"
+#include "searchworker.h"
 #include <QProcess>
 #include <QNetworkInterface>
 #include <QMessageBox>
 #include <QCoreApplication>
 
-SearchThread::SearchThread(QObject *parent) :
-    QThread(parent), stopping(false)
+SearchWorker::SearchWorker(QObject *parent) :
+    QObject(parent), stopping(false)
 {
 }
 
-SearchThread::~SearchThread()
+SearchWorker::~SearchWorker()
 {
     foreach(QProcess *process, pingProcesses)
     {
         if(process->state()!=QProcess::NotRunning)
             process->kill();
-        delete process;
+        process->deleteLater();
     }
 }
 
-void SearchThread::run()
+void SearchWorker::sendPingRequests()
 {
+    /*
+#if defined(Q_OS_UNIX)
+    QString ping("/usr/bin/ping");
+#elif defined(Q_OS_WIN)
+    QString ping("ping.exe");
+#endif
+    */
     QStringList arguments;
+//    arguments << "-c1" << "-n" <<"-q";
 
     foreach(QNetworkInterface interface, QNetworkInterface::allInterfaces())
     {
@@ -54,7 +62,7 @@ void SearchThread::run()
 
                         if(process->state()==QProcess::NotRunning)
                         {
-                            delete process;
+                            process->deleteLater();
                             pingProcesses.removeOne(process);
                         }
                     }
@@ -79,9 +87,11 @@ void SearchThread::run()
             }
         }
     }
+
+    emit(searchPingFinished());
 }
 
-void SearchThread::stop()
+void SearchWorker::stop()
 {
-    stopping=true;
+
 }

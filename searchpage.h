@@ -4,8 +4,7 @@
 #include <QWizardPage>
 #include <QTimer>
 #include <QList>
-
-class SearchThread;
+#include <QThread>
 
 class SearchPage : public QWizardPage
 {
@@ -18,9 +17,9 @@ public:
     bool isComplete() const;
 private:
     QTimer checkResultsTimer;
-    SearchThread *searchThread;
+    QThread searchThread;
 signals:
-
+    void cleaningUp();
 public slots:
     void checkResults();
 };
