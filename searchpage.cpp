@@ -1,5 +1,5 @@
 #include "searchpage.h"
-#include "searchworker.h"
+#include "searchthread.h"
 #include <QVariant>
 #include <QFile>
 #include <QTextStream>
@@ -28,21 +28,19 @@ void SearchPage::initializePage()
 
     setSubTitle(subTitle);
 
-    SearchWorker *worker = new SearchWorker;
-    worker->moveToThread(&searchThread);
-    connect(&searchThread, SIGNAL(finished()), worker, SLOT(deleteLater()));
-    connect(&searchThread, SIGNAL(started()), worker, SLOT(sendPingRequests()));
-    connect(this, SIGNAL(cleaningUp()), worker, SLOT(stop()));
-    searchThread.start();
+    searchThread = new SearchThread();
+    searchThread->start();
 
     checkResultsTimer.start();
 }
 
 void SearchPage::cleanupPage()
 {
-    emit(cleaningUp());
     checkResultsTimer.stop();
-    searchThread.quit();
+    searchThread->stop();
+    if(!searchThread->wait(1000))
+        searchThread->terminate();
+    delete searchThread;
 }
 
 bool SearchPage::isComplete() const

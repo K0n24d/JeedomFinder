@@ -18,7 +18,7 @@ SOURCES += main.cpp\
     searchpage.cpp \
     advancedsearchpage.cpp \
     conclusionpage.cpp \
-    searchworker.cpp
+    searchthread.cpp
 
 HEADERS  += \
     quickstartwizard.h \
@@ -26,7 +26,7 @@ HEADERS  += \
     searchpage.h \
     advancedsearchpage.h \
     conclusionpage.h \
-    searchworker.h
+    searchthread.h
 
 FORMS    +=
 
