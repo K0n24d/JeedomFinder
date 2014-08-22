@@ -4,11 +4,29 @@
 #include "searchpage.h"
 #include "conclusionpage.h"
 #include <QVariant>
+#include <QIcon>
+
+#if defined(Q_OS_UNIX)
+#include <unistd.h>
+#endif
 
 QuickStartWizard::QuickStartWizard(QWidget *parent) :
     QWizard(parent)
 {
+#if defined(Q_OS_UNIX)
+    setProperty("hasAdminRights", !geteuid());
+#elif defined(Q_OS_WIN)
+    setProperty("hasAdminRights", true);
+#else
+    setProperty("hasAdminRights", false);
+#endif
+
+
     setWindowTitle(tr("Jeedom"));
+    setWindowIcon(QIcon(":/images/icon"));
+
+    setWizardStyle(QWizard::ModernStyle);
+
     setPage(Page_Intro, new IntroPage);
     setPage(Page_AdvancedSearch, new AdvancedSearchPage);
     setPage(Page_Search, new SearchPage);

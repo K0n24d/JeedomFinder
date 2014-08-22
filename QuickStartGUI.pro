@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui
+QT       += core gui network
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -17,14 +17,16 @@ SOURCES += main.cpp\
     intropage.cpp \
     searchpage.cpp \
     advancedsearchpage.cpp \
-    conclusionpage.cpp
+    conclusionpage.cpp \
+    searchworker.cpp
 
 HEADERS  += \
     quickstartwizard.h \
     intropage.h \
     searchpage.h \
     advancedsearchpage.h \
-    conclusionpage.h
+    conclusionpage.h \
+    searchworker.h
 
 FORMS    +=
 

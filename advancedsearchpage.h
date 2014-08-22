@@ -3,11 +3,18 @@
 
 #include <QWizardPage>
 
+class QCheckBox;
+
 class AdvancedSearchPage : public QWizardPage
 {
     Q_OBJECT
 public:
     explicit AdvancedSearchPage(QWidget *parent = 0);
+
+    bool isComplete() const;
+    void initializePage();
+protected:
+    QCheckBox *arpscan;
 
 signals:
 

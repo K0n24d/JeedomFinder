@@ -2,7 +2,6 @@
 #include <QLabel>
 #include <QVBoxLayout>
 #include <QRadioButton>
-#include <QSpacerItem>
 
 IntroPage::IntroPage(QWidget *parent) :
     QWizardPage(parent)
