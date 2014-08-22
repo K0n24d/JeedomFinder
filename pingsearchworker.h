@@ -1,16 +1,16 @@
-#ifndef SEARCHWORKER_H
-#define SEARCHWORKER_H
+#ifndef PINGSEARCHWORKER_H
+#define PINGSEARCHWORKER_H
 
 #include <QObject>
 
 class QProcess;
 
-class SearchWorker : public QObject
+class PingSearchWorker : public QObject
 {
     Q_OBJECT
 public:
-    explicit SearchWorker(QObject *parent = 0);
-    ~SearchWorker();
+    explicit PingSearchWorker(QObject *parent = 0);
+    ~PingSearchWorker();
 protected:
     bool stopping;
 
@@ -22,4 +22,4 @@ public slots:
     void stop();
 };
 
-#endif // SEARCHWORKER_H
+#endif // PINGSEARCHWORKER_H

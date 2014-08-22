@@ -1,15 +1,15 @@
-#include "searchworker.h"
+#include "pingsearchworker.h"
 #include <QProcess>
 #include <QNetworkInterface>
 #include <QMessageBox>
 #include <QCoreApplication>
 
-SearchWorker::SearchWorker(QObject *parent) :
+PingSearchWorker::PingSearchWorker(QObject *parent) :
     QObject(parent), stopping(false)
 {
 }
 
-SearchWorker::~SearchWorker()
+PingSearchWorker::~PingSearchWorker()
 {
     foreach(QProcess *process, pingProcesses)
     {
@@ -19,7 +19,7 @@ SearchWorker::~SearchWorker()
     }
 }
 
-void SearchWorker::sendPingRequests()
+void PingSearchWorker::sendPingRequests()
 {
     /*
 #if defined(Q_OS_UNIX)
@@ -66,6 +66,7 @@ void SearchWorker::sendPingRequests()
                             pingProcesses.removeOne(process);
                         }
                     }
+
                     QCoreApplication::processEvents(QEventLoop::AllEvents, 100);
                 }
 
@@ -88,10 +89,26 @@ void SearchWorker::sendPingRequests()
         }
     }
 
+    while(pingProcesses.count()>0)
+    {
+        foreach(QProcess *process, pingProcesses)
+        {
+            if(stopping)
+                return;
+
+            if(process->state()==QProcess::NotRunning)
+            {
+                process->deleteLater();
+                pingProcesses.removeOne(process);
+            }
+        }
+        QCoreApplication::processEvents(QEventLoop::AllEvents, 100);
+    }
+
     emit(searchPingFinished());
 }
 
-void SearchWorker::stop()
+void PingSearchWorker::stop()
 {
-
+    stopping = true;
 }

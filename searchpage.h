@@ -5,6 +5,10 @@
 #include <QTimer>
 #include <QList>
 #include <QThread>
+#include <QProgressBar>
+#include <QProcess>
+
+class QProcess;
 
 class SearchPage : public QWizardPage
 {
@@ -18,10 +22,21 @@ public:
 private:
     QTimer checkResultsTimer;
     QThread searchThread;
+    QProgressBar progressBar;
+#ifdef Q_OS_WIN
+    QProcess arpTableProcess;
+#endif
+    int numberOfSearchWorkersRunning;
+
 signals:
     void cleaningUp();
+    void hostFound(QString name, QString mac);
 public slots:
     void checkResults();
+#ifdef Q_OS_WIN
+    void gotArpResults(int);
+#endif
+    void searchFinished();
 };
 
 #endif // SEARCHPAGE_H

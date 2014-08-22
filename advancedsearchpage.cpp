@@ -11,10 +11,16 @@ AdvancedSearchPage::AdvancedSearchPage(QWidget *parent) :
     setSubTitle(tr("Veuillez sélectionner ci-dessous les options utilisées lors de la recherche"));
 
     QGroupBox *modesRecherche = new QGroupBox(tr("Modes de recherche :"));
+
     QCheckBox *zeroconf = new QCheckBox(tr("Recherche via Zeroconf"));
     zeroconf->setChecked(true);
     registerField("zeroconf", zeroconf);
     connect(zeroconf, SIGNAL(stateChanged(int)), SIGNAL(completeChanged()));
+
+    QCheckBox *ping = new QCheckBox(tr("Recherche via Ping + ARP Cache"));
+    ping->setChecked(true);
+    registerField("ping", ping);
+    connect(ping, SIGNAL(stateChanged(int)), SIGNAL(completeChanged()));
 
     arpscan = new QCheckBox(tr("Recherche via ARP Ping"));
     registerField("arpscan", arpscan);
@@ -22,6 +28,7 @@ AdvancedSearchPage::AdvancedSearchPage(QWidget *parent) :
 
     QVBoxLayout *modesRechercheLayout = new QVBoxLayout();
     modesRechercheLayout->addWidget(zeroconf);
+    modesRechercheLayout->addWidget(ping);
     modesRechercheLayout->addWidget(arpscan);
     modesRecherche->setLayout(modesRechercheLayout);
 
@@ -29,7 +36,6 @@ AdvancedSearchPage::AdvancedSearchPage(QWidget *parent) :
     layout->addWidget(modesRecherche);
     layout->addStretch(1);
     setLayout(layout);
-
 }
 
 void AdvancedSearchPage::initializePage()
@@ -45,7 +51,10 @@ void AdvancedSearchPage::initializePage()
 
 bool AdvancedSearchPage::isComplete() const
 {
-    if(!field("zeroconf").toBool() && !field("arpscan").toBool())
+    if(!field("zeroconf").toBool()
+            && !field("ping").toBool()
+            && !field("arpscan").toBool()
+            )
         return false;
 
     return true;
