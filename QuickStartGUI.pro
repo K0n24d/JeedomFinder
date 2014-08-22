@@ -8,9 +8,12 @@ QT       += core gui network
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
+CONFIG += static
+
 TARGET = QuickStartGUI
 TEMPLATE = app
 
+INCLUDEPATH += Bonjour
 
 SOURCES += main.cpp\
     quickstartwizard.cpp \
@@ -18,7 +21,10 @@ SOURCES += main.cpp\
     searchpage.cpp \
     advancedsearchpage.cpp \
     conclusionpage.cpp \
-    pingsearchworker.cpp
+    pingsearchworker.cpp \
+    Bonjour/bonjourserviceresolver.cpp \
+    Bonjour/bonjourservicebrowser.cpp \
+    bonjoursearchworker.cpp
 
 HEADERS  += \
     quickstartwizard.h \
@@ -26,9 +32,19 @@ HEADERS  += \
     searchpage.h \
     advancedsearchpage.h \
     conclusionpage.h \
-    pingsearchworker.h
+    pingsearchworker.h \
+    Bonjour/bonjourserviceresolver.h \
+    Bonjour/bonjourservicebrowser.h \
+    Bonjour/bonjourrecord.h \
+    bonjoursearchworker.h
 
 FORMS    +=
 
 RESOURCES += \
     resources.qrc
+
+unix:LIBS+=-ldns_sd
+win32:LIBS+=-ldnssd
+
+CODECFORSRC = UTF-8
+CODECFORTR = UTF-8
