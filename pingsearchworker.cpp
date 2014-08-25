@@ -190,8 +190,7 @@ void PingSearchWorker::checkResults()
 
             if(mac.startsWith("B8:27:EB") || mac.startsWith("52:54:00") || mac.startsWith("42:98:42"))
             {
-                QHostInfo hostInfo;
-                hostInfo.fromName(list.at(1));
+                QHostInfo hostInfo = QHostInfo::fromName(list.at(1));
 
                 Host thisHost;
                 thisHost.name = hostInfo.hostName();
