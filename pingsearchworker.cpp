@@ -2,10 +2,17 @@
 #include <QProcess>
 #include <QNetworkInterface>
 #include <QCoreApplication>
+#include <QFile>
+#include <QTextStream>
+#include <QHostInfo>
 
 PingSearchWorker::PingSearchWorker(QObject *parent) :
-    QObject(parent), stopping(false)
+    SearchWorker(parent), stopping(false)
 {
+    checkResultsTimer.setInterval(1000);
+    checkResultsTimer.setSingleShot(true);
+
+    connect(&checkResultsTimer, SIGNAL(timeout()), this, SLOT(checkResults()));
 }
 
 PingSearchWorker::~PingSearchWorker()
@@ -20,15 +27,9 @@ PingSearchWorker::~PingSearchWorker()
 
 void PingSearchWorker::discover()
 {
-    /*
-#if defined(Q_OS_UNIX)
-    QString ping("/usr/bin/ping");
-#elif defined(Q_OS_WIN)
-    QString ping("ping.exe");
-#endif
-    */
     QStringList arguments;
-//    arguments << "-c1" << "-n" <<"-q";
+
+    checkResultsTimer.start();
 
     foreach(QNetworkInterface interface, QNetworkInterface::allInterfaces())
     {
@@ -109,5 +110,102 @@ void PingSearchWorker::discover()
 
 void PingSearchWorker::stop()
 {
+    checkResultsTimer.stop();
     stopping = true;
 }
+
+#ifdef Q_OS_WIN
+void PingSearchWorker::checkResults()
+{
+    if(arpTableProcess.state()!=QProcess::NotRunning)
+    {
+        if(numberOfSearchWorkersRunning>0)
+            checkResultsTimer.start();
+        return;
+    }
+
+    if(!arpTableProcess.start("arp", QStringList() << "-a"))
+        emit(error(Q_FUNC_INFO, tr("Impossible de lancer l'utilitaire arp.")));
+}
+
+void PingSearchWorker::gotArpResults(int)
+{
+    QRegExp rx("^ *([0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}) *([^ -]+-[^ -]+-[^ -]+-[^ -]+-[^ -]+-[^ -]+).*$");
+            /*
+    QRegExp rx(" *\\([0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\)"
+               " +\\([^ ]+\\)"
+               " .*");
+                       */
+    while(!arpTableProcess.atEnd())
+    {
+        QString line(arpTableProcess.readLine());
+        int pos = rx.indexIn(line);
+        if(pos<0)
+            continue;
+
+        QStringList list = rx.capturedTexts();
+        if(list.count()!=3)
+            continue;
+
+//        QString mac = list.at(2).split('-').join(':').toUpper();
+        QString mac = list.at(2).split("-").join(":").toUpper();
+        if(mac.startsWith("B8:27:EB") || mac.startsWith("52:54:00"))
+        {
+            emit(hostFound(list.at(1), mac));
+        }
+//        QHostInfo hostInfo(QHostInfo::fromName(address));
+//        QString name = hostInfo.hostName();
+    }
+
+    checkResultsTimer.start();
+}
+#endif
+
+#ifdef Q_OS_LINUX
+void PingSearchWorker::checkResults()
+{
+    QFile arpTable("/proc/net/arp");
+
+    if(arpTable.open(QFile::ReadOnly))
+    {
+        QRegExp rx("^ *([0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3})[^:]*([^ :]+:[^ :]+:[^ :]+:[^ :]+:[^ :]+:[^ :]+).*$");
+        QByteArray data = arpTable.readAll();
+        QTextStream in(&data, QIODevice::ReadOnly);
+
+        while(!in.atEnd())
+        {
+            QString line(in.readLine());
+            int pos = rx.indexIn(line);
+
+            if(pos<0)
+                continue;
+
+            QStringList list = rx.capturedTexts();
+            if(list.count()!=3)
+                continue;
+
+            QString mac = list.at(2).toUpper();
+            if(!mac.compare("00:00:00:00:00:00"))
+                continue;
+
+            if(mac.startsWith("B8:27:EB") || mac.startsWith("52:54:00") || mac.startsWith("42:98:42"))
+            {
+                QHostInfo hostInfo;
+                hostInfo.fromName(list.at(1));
+
+                Host thisHost;
+                thisHost.name = hostInfo.hostName();
+                thisHost.ip = list.at(1);
+                thisHost.desc = tr("MAC : %1").arg(mac);
+                thisHost.url = QString("http://%1/jeedom").arg(thisHost.ip);
+                emit(host(thisHost));
+            }
+        }
+    }
+    else
+        emit(error(Q_FUNC_INFO, tr("Impossible d'ouvrir /proc/net/arp: %1").arg(arpTable.errorString())));
+
+    if(!stopping)
+        checkResultsTimer.start();
+}
+#endif

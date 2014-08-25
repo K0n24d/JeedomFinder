@@ -3,10 +3,9 @@
 #include "bonjourserviceresolver.h"
 
 BonjourSearchWorker::BonjourSearchWorker(QObject *parent)
-    : QObject(parent)
+    : SearchWorker(parent)
 {
     bonjourBrowser = new BonjourServiceBrowser(this);
-    bonjourResolver = new BonjourServiceResolver(this);
 
     connect(bonjourBrowser, SIGNAL(currentBonjourRecordsChanged(const QList<BonjourRecord> &)),
             this, SLOT(updateRecords(const QList<BonjourRecord> &)));
@@ -19,28 +18,36 @@ void BonjourSearchWorker::discover()
 
 void BonjourSearchWorker::stop()
 {
-
 }
 
 void BonjourSearchWorker::updateRecords(const QList<BonjourRecord> &list)
 {
     foreach (BonjourRecord record, list)
     {
-        emit(error(Q_FUNC_INFO, record.serviceName));
+        BonjourServiceResolver *bonjourResolver = new BonjourServiceResolver(this);
+
+        bonjourResolvers.insert(bonjourResolver, record);
+        connect(bonjourResolver, SIGNAL(bonjourRecordResolved(QHostInfo,int)),
+                this, SLOT(recordResolved(QHostInfo,int)));
+
+        bonjourResolver->resolveBonjourRecord(record);
     }
-    /*
-    treeWidget->clear();
-    foreach (BonjourRecord record, list) {
-        QVariant variant;
-        variant.setValue(record);
-        QTreeWidgetItem *processItem = new QTreeWidgetItem(treeWidget,
-                                                           QStringList() << record.serviceName);
-        processItem->setData(0, Qt::UserRole, variant);
-    }
-    
-    if (treeWidget->invisibleRootItem()->childCount() > 0) {
-        treeWidget->invisibleRootItem()->child(0)->setSelected(true);
-    }
-    enableGetFortuneButton();
-    */
+}
+
+void BonjourSearchWorker::recordResolved(const QHostInfo &hostInfo, int port)
+{
+    BonjourServiceResolver *resolver = static_cast<BonjourServiceResolver *>(sender());
+    BonjourRecord record = bonjourResolvers.value(resolver);
+    resolver->deleteLater();
+    bonjourResolvers.remove(resolver);
+
+    Host thisHost;
+    thisHost.name = hostInfo.hostName();
+    thisHost.ip = hostInfo.addresses().isEmpty()?QString():hostInfo.addresses().at(0).toString();
+    thisHost.desc = tr("Name: %1, Type: %2, Domain: %3, Port: %4").arg(record.serviceName).arg(record.registeredType).arg(record.replyDomain).arg(port);
+    thisHost.url = QString("http://%1:%2/jeedom").arg(thisHost.ip).arg(port);
+    emit(host(thisHost));
+
+    if(bonjourResolvers.isEmpty())
+        emit(finished());
 }

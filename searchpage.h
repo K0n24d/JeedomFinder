@@ -2,11 +2,12 @@
 #define SEARCHPAGE_H
 
 #include <QWizardPage>
-#include <QTimer>
 #include <QList>
 #include <QThread>
 #include <QProgressBar>
+#include <QTableWidget>
 #include <QProcess>
+#include "searchworker.h"
 
 class QProcess;
 
@@ -20,23 +21,17 @@ public:
     void cleanupPage();
     bool isComplete() const;
 private:
-    QTimer checkResultsTimer;
+    void addWorker(SearchWorker *worker);
     QThread searchThread;
     QProgressBar progressBar;
-#ifdef Q_OS_WIN
-    QProcess arpTableProcess;
-#endif
+    QTableWidget hostsTable;
     int numberOfSearchWorkersRunning;
 
 signals:
     void cleaningUp();
-    void hostFound(QString name, QString mac);
 public slots:
-    void checkResults();
-    void gotError(const QString title, const QString message);
-#ifdef Q_OS_WIN
-    void gotArpResults(int);
-#endif
+    void gotHost(const SearchWorker::Host &host);
+    void gotError(const QString &title, const QString &message);
     void searchFinished();
 };
 

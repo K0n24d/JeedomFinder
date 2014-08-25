@@ -24,7 +24,8 @@ SOURCES += main.cpp\
     pingsearchworker.cpp \
     Bonjour/bonjourserviceresolver.cpp \
     Bonjour/bonjourservicebrowser.cpp \
-    bonjoursearchworker.cpp
+    bonjoursearchworker.cpp \
+    searchworker.cpp
 
 HEADERS  += \
     quickstartwizard.h \
@@ -36,17 +37,56 @@ HEADERS  += \
     Bonjour/bonjourserviceresolver.h \
     Bonjour/bonjourservicebrowser.h \
     Bonjour/bonjourrecord.h \
-    bonjoursearchworker.h
+    bonjoursearchworker.h \
+    searchworker.h
 
 FORMS    +=
 
 RESOURCES += \
     resources.qrc
 
-unix:LIBS+=-ldns_sd
+unix:LIBS+=-ldns_sd -lavahi-client -lavahi-common -ldbus-1
 win32:LIBS+=-ldnssd
 win32:LIBPATH+="C:/Program Files/Bonjour SDK/Lib/Win32"
 win32:INCLUDEPATH+="C:/Program Files/Bonjour SDK/Include"
 
 CODECFORSRC = UTF-8
 CODECFORTR = UTF-8
+
+defineTest(matches) {
+  value = $$1
+  regex = $$2
+  test = $$replace($${value}, $${regex}, "")
+  isEmpty($${test}) {
+    return(true)
+  } else {
+    return(false)
+  }
+}
+ 
+linux-g++* {
+   for(lib, LIBS) {
+      # If it's something we don't recognize (neither "-lfoo" nor "-Lfoo") just add it directly
+      !matches(lib, "^-l.*$") {
+         libtemp *= $${lib}
+      # Don't statically link POSIX threading or dlOpen libraries
+      } else:isEqual(lib, "-lpthread") | isEqual(lib, "-ldl") {
+         libtemp *= $${lib}
+      # Ask GCC to find a static version of the library
+      } else {
+         libfile = $$replace(lib, "^-l(.*)$", "lib\\1.a")
+         libloc = $$system("gcc $${LIBS} -print-file-name=$${libfile}")
+         # If it didn't find it, just keep the 
+         isEqual(libloc, $${libfile}) {
+            libtemp *= $${lib}
+         } else {
+            libtemp *= $${libloc}
+         }
+      }
+   }
+   LIBS = $${libtemp}
+   unset(libtemp)
+   unset(libfile)
+   unset(libloc)
+}
+

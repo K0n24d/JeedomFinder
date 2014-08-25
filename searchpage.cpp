@@ -2,15 +2,15 @@
 #include "pingsearchworker.h"
 #include "bonjoursearchworker.h"
 #include <QVariant>
-#include <QFile>
-#include <QTextStream>
 #include <QVBoxLayout>
-#include <QHostInfo>
 #include <QMessageBox>
+#include <QTableWidget>
 
 SearchPage::SearchPage(QWidget *parent) :
     QWizardPage(parent)
 {
+    qRegisterMetaType<SearchWorker::Host>("SearchWorker::Host");
+
     numberOfSearchWorkersRunning=0;
 
     setTitle(tr("Recherche et sélection du serveur Jeedom"));
@@ -19,12 +19,17 @@ SearchPage::SearchPage(QWidget *parent) :
     connect(&arpTableProcess, SIGNAL(finished(int)), this, SLOT(gotArpResults(int)));
 #endif
 
-    checkResultsTimer.setInterval(1000);
-    checkResultsTimer.setSingleShot(true);
+    hostsTable.setColumnCount(4);
+    hostsTable.setRowCount(0);
+    hostsTable.setSelectionBehavior(QAbstractItemView::SelectRows);
 
-    connect(&checkResultsTimer, SIGNAL(timeout()), this, SLOT(checkResults()));
+    QStringList labels;
+    labels << tr("Nom") << tr("URL") << tr("Adresse IP") << tr("Description");
+    hostsTable.setHorizontalHeaderLabels(labels);
+    hostsTable.setDisabled(true);
 
-    QVBoxLayout *layout = new QVBoxLayout;
+    QVBoxLayout *layout = new QVBoxLayout(this);
+    layout->addWidget(&hostsTable);
     layout->addStretch();
     layout->addWidget(&progressBar);
     setLayout(layout);
@@ -47,29 +52,11 @@ void SearchPage::initializePage()
 
     numberOfSearchWorkersRunning=0;
 
-    if(field("ping").toBool())
-    {
-        PingSearchWorker *worker = new PingSearchWorker;
-        worker->moveToThread(&searchThread);
-        connect(worker, SIGNAL(finished()), this, SLOT(searchFinished()));
-        connect(worker, SIGNAL(error(QString,QString)), this, SLOT(gotError(QString,QString)));
-        connect(&searchThread, SIGNAL(finished()), worker, SLOT(deleteLater()));
-        connect(&searchThread, SIGNAL(started()), worker, SLOT(discover()));
-        connect(this, SIGNAL(cleaningUp()), worker, SLOT(stop()));
-        numberOfSearchWorkersRunning++;
-    }
-
     if(field("zeroconf").toBool())
-    {
-        BonjourSearchWorker *worker = new BonjourSearchWorker;
-        worker->moveToThread(&searchThread);
-        connect(worker, SIGNAL(finished()), this, SLOT(searchFinished()));
-        connect(worker, SIGNAL(error(QString,QString)), this, SLOT(gotError(QString,QString)));
-        connect(&searchThread, SIGNAL(finished()), worker, SLOT(deleteLater()));
-        connect(&searchThread, SIGNAL(started()), worker, SLOT(discover()));
-        connect(this, SIGNAL(cleaningUp()), worker, SLOT(stop()));
-        numberOfSearchWorkersRunning++;
-    }
+        addWorker(new BonjourSearchWorker);
+
+    if(field("ping").toBool())
+        addWorker(new PingSearchWorker);
 
     if(numberOfSearchWorkersRunning>0)
     {
@@ -84,7 +71,19 @@ void SearchPage::initializePage()
 
 
     searchThread.start();
-    checkResultsTimer.start();
+}
+
+void SearchPage::addWorker(SearchWorker *worker)
+{
+    worker->moveToThread(&searchThread);
+    connect(worker, SIGNAL(finished()), this, SLOT(searchFinished()));
+    connect(worker, SIGNAL(error(QString,QString)), this, SLOT(gotError(QString,QString)));
+
+    connect(worker, SIGNAL(host(SearchWorker::Host)), this, SLOT(gotHost(SearchWorker::Host)));
+    connect(&searchThread, SIGNAL(finished()), worker, SLOT(deleteLater()));
+    connect(&searchThread, SIGNAL(started()), worker, SLOT(discover()));
+    connect(this, SIGNAL(cleaningUp()), worker, SLOT(stop()));
+    numberOfSearchWorkersRunning++;
 }
 
 void SearchPage::cleanupPage()
@@ -94,7 +93,6 @@ void SearchPage::cleanupPage()
     if(arpTableProcess.state()!=QProcess::NotRunning)
         arpTableProcess.kill();
 #endif
-    checkResultsTimer.stop();
     searchThread.quit();
 }
 
@@ -103,95 +101,37 @@ bool SearchPage::isComplete() const
     return false;
 }
 
-#ifdef Q_OS_WIN
-void SearchPage::checkResults()
+void SearchPage::gotHost(const SearchWorker::Host &host)
 {
-    if(arpTableProcess.state()!=QProcess::NotRunning)
-    {
-        if(numberOfSearchWorkersRunning>0)
-            checkResultsTimer.start();
+//    QMessageBox::information(NULL, Q_FUNC_INFO, tr("Nom: %1, IPv4: %2, Description: %3").arg(name, ipv4, description));
+    if(!hostsTable.findItems(host.url, Qt::MatchExactly).isEmpty())
         return;
-    }
 
-    arpTableProcess.start("arp", QStringList() << "-a");
+    hostsTable.setEnabled(true);
+
+    int row=hostsTable.rowCount();
+    hostsTable.setRowCount(row+1);
+
+    QTableWidgetItem * name = new QTableWidgetItem(host.name);
+    name->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
+    hostsTable.setItem(row, 0, name);
+
+    QTableWidgetItem * url = new QTableWidgetItem(host.url);
+    name->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
+    hostsTable.setItem(row, 1, url);
+
+    QTableWidgetItem * ip = new QTableWidgetItem(host.ip);
+    name->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
+    hostsTable.setItem(row, 2, ip);
+
+    QTableWidgetItem * desc = new QTableWidgetItem(host.desc);
+    name->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
+    hostsTable.setItem(row, 3, desc);
+
+    hostsTable.resizeColumnsToContents();
 }
 
-void SearchPage::gotArpResults(int)
-{
-    QRegExp rx("^ *([0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}) *([^ -]+-[^ -]+-[^ -]+-[^ -]+-[^ -]+-[^ -]+).*$");
-            /*
-    QRegExp rx(" *\\([0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\)"
-               " +\\([^ ]+\\)"
-               " .*");
-                       */
-    while(!arpTableProcess.atEnd())
-    {
-        QString line(arpTableProcess.readLine());
-        int pos = rx.indexIn(line);
-        if(pos<0)
-            continue;
-
-        QStringList list = rx.capturedTexts();
-        if(list.count()!=3)
-            continue;
-
-//        QString mac = list.at(2).split('-').join(':').toUpper();
-        QString mac = list.at(2).split("-").join(":").toUpper();
-        if(mac.startsWith("B8:27:EB") || mac.startsWith("52:54:00"))
-        {
-            emit(hostFound(list.at(1), mac));
-        }
-//        QHostInfo hostInfo(QHostInfo::fromName(address));
-//        QString name = hostInfo.hostName();
-    }
-
-    checkResultsTimer.start();
-}
-#endif
-
-#ifdef Q_OS_LINUX
-void SearchPage::checkResults()
-{
-    QFile arpTable("/proc/net/arp");
-
-    if(arpTable.open(QFile::ReadOnly))
-    {
-        QRegExp rx("^ *([0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3})[^:]*([^ :]+:[^ :]+:[^ :]+:[^ :]+:[^ :]+:[^ :]+).*$");
-        QByteArray data = arpTable.readAll();
-        QTextStream in(&data, QIODevice::ReadOnly);
-
-        while(!in.atEnd())
-        {
-            QString line(in.readLine());
-            int pos = rx.indexIn(line);
-
-            if(pos<0)
-                continue;
-
-            QStringList list = rx.capturedTexts();
-            if(list.count()!=3)
-                continue;
-
-            QString mac = list.at(2).toUpper();
-            if(!mac.compare("00:00:00:00:00:00"))
-                continue;
-
-            if(mac.startsWith("B8:27:EB") || mac.startsWith("52:54:00") || mac.startsWith("42:98:42"))
-            {
-                emit(hostFound(list.at(1), mac));
-            }
-        }
-    }
-    else
-        QMessageBox::warning(NULL, Q_FUNC_INFO, "Could not open /proc/net/arp", QMessageBox::Close);
-
-
-    if(numberOfSearchWorkersRunning>0)
-        checkResultsTimer.start();
-}
-#endif
-
-void SearchPage::gotError(const QString title, const QString message)
+void SearchPage::gotError(const QString &title, const QString &message)
 {
     QMessageBox::warning(NULL, title, message, QMessageBox::Close);
 }

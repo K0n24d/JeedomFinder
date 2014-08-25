@@ -1,13 +1,15 @@
 #ifndef BONJOURSEARCHWORKER_H
 #define BONJOURSEARCHWORKER_H
 
-#include <QObject>
+#include "searchworker.h"
 #include "bonjourrecord.h"
+#include <QHostInfo>
+#include <QMap>
 
 class BonjourServiceBrowser;
 class BonjourServiceResolver;
 
-class BonjourSearchWorker : public QObject
+class BonjourSearchWorker : public SearchWorker
 {
     Q_OBJECT
 
@@ -16,14 +18,12 @@ public:
 
 private slots:
     void updateRecords(const QList<BonjourRecord> &list);
+    void recordResolved(const QHostInfo &hostInfo, int port);
 
 protected:
     BonjourServiceBrowser *bonjourBrowser;
-    BonjourServiceResolver *bonjourResolver;
+    QMap<BonjourServiceResolver*, BonjourRecord> bonjourResolvers;
 
-signals:
-    void finished();
-    void error(const QString, const QString);
 public slots:
     void discover();
     void stop();
