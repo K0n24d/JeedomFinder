@@ -20,6 +20,13 @@ private slots:
 protected:
     BonjourServiceBrowser *bonjourBrowser;
     BonjourServiceResolver *bonjourResolver;
+
+signals:
+    void finished();
+    void error(const QString, const QString);
+public slots:
+    void discover();
+    void stop();
 };
 
 #endif // BONJOURSEARCHWORKER_H

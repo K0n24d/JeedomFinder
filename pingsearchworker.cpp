@@ -1,7 +1,6 @@
 #include "pingsearchworker.h"
 #include <QProcess>
 #include <QNetworkInterface>
-#include <QMessageBox>
 #include <QCoreApplication>
 
 PingSearchWorker::PingSearchWorker(QObject *parent) :
@@ -19,7 +18,7 @@ PingSearchWorker::~PingSearchWorker()
     }
 }
 
-void PingSearchWorker::sendPingRequests()
+void PingSearchWorker::discover()
 {
     /*
 #if defined(Q_OS_UNIX)
@@ -81,7 +80,7 @@ void PingSearchWorker::sendPingRequests()
                 process->start("ping", arguments);
                 if(!process->waitForStarted())
                 {
-                    QMessageBox::warning(NULL, tr("Impossible de lancer ping"), "Erreur: " + process->errorString(), QMessageBox::Close);
+                    emit(error(Q_FUNC_INFO, tr("Impossible de lancer ping %1").arg(process->errorString())));
                 }
 
                 address++;
@@ -105,7 +104,7 @@ void PingSearchWorker::sendPingRequests()
         QCoreApplication::processEvents(QEventLoop::AllEvents, 100);
     }
 
-    emit(searchPingFinished());
+    emit(finished());
 }
 
 void PingSearchWorker::stop()

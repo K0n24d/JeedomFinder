@@ -33,6 +33,8 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 BonjourServiceBrowser::BonjourServiceBrowser(QObject *parent)
     : QObject(parent), dnssref(0), bonjourSocket(0)
 {
+    dnssref=NULL;
+    bonjourSocket=NULL;
 }
 
 BonjourServiceBrowser::~BonjourServiceBrowser()
@@ -45,7 +47,7 @@ BonjourServiceBrowser::~BonjourServiceBrowser()
 
 void BonjourServiceBrowser::browseForServiceType(const QString &serviceType)
 {
-    DNSServiceErrorType err = DNSServiceBrowse(&dnssref, 0, 0, serviceType.toUtf8().constData(), 0,
+    DNSServiceErrorType err = DNSServiceBrowse(&dnssref, 0, 0, serviceType.toUtf8().constData(), NULL,
                                                bonjourBrowseReply, this);
     if (err != kDNSServiceErr_NoError) {
         emit error(err);

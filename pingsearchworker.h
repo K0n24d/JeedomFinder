@@ -16,9 +16,10 @@ protected:
 
     QList<QProcess*> pingProcesses;
 signals:
-    void searchPingFinished();
+    void finished();
+    void error(const QString, const QString);
 public slots:
-    void sendPingRequests();
+    void discover();
     void stop();
 };
 

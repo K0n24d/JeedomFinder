@@ -33,6 +33,7 @@ signals:
     void hostFound(QString name, QString mac);
 public slots:
     void checkResults();
+    void gotError(const QString title, const QString message);
 #ifdef Q_OS_WIN
     void gotArpResults(int);
 #endif

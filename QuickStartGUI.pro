@@ -45,6 +45,8 @@ RESOURCES += \
 
 unix:LIBS+=-ldns_sd
 win32:LIBS+=-ldnssd
+win32:LIBPATH+="C:/Program Files/Bonjour SDK/Lib/Win32"
+win32:INCLUDEPATH+="C:/Program Files/Bonjour SDK/Include"
 
 CODECFORSRC = UTF-8
 CODECFORTR = UTF-8

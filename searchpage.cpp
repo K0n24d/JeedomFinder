@@ -1,5 +1,6 @@
 #include "searchpage.h"
 #include "pingsearchworker.h"
+#include "bonjoursearchworker.h"
 #include <QVariant>
 #include <QFile>
 #include <QTextStream>
@@ -50,9 +51,22 @@ void SearchPage::initializePage()
     {
         PingSearchWorker *worker = new PingSearchWorker;
         worker->moveToThread(&searchThread);
-        connect(worker, SIGNAL(searchPingFinished()), this, SLOT(searchFinished()));
+        connect(worker, SIGNAL(finished()), this, SLOT(searchFinished()));
+        connect(worker, SIGNAL(error(QString,QString)), this, SLOT(gotError(QString,QString)));
         connect(&searchThread, SIGNAL(finished()), worker, SLOT(deleteLater()));
-        connect(&searchThread, SIGNAL(started()), worker, SLOT(sendPingRequests()));
+        connect(&searchThread, SIGNAL(started()), worker, SLOT(discover()));
+        connect(this, SIGNAL(cleaningUp()), worker, SLOT(stop()));
+        numberOfSearchWorkersRunning++;
+    }
+
+    if(field("zeroconf").toBool())
+    {
+        BonjourSearchWorker *worker = new BonjourSearchWorker;
+        worker->moveToThread(&searchThread);
+        connect(worker, SIGNAL(finished()), this, SLOT(searchFinished()));
+        connect(worker, SIGNAL(error(QString,QString)), this, SLOT(gotError(QString,QString)));
+        connect(&searchThread, SIGNAL(finished()), worker, SLOT(deleteLater()));
+        connect(&searchThread, SIGNAL(started()), worker, SLOT(discover()));
         connect(this, SIGNAL(cleaningUp()), worker, SLOT(stop()));
         numberOfSearchWorkersRunning++;
     }
@@ -121,7 +135,8 @@ void SearchPage::gotArpResults(int)
         if(list.count()!=3)
             continue;
 
-        QString mac = list.at(2).split('-').join(':').toUpper();
+//        QString mac = list.at(2).split('-').join(':').toUpper();
+        QString mac = list.at(2).split("-").join(":").toUpper();
         if(mac.startsWith("B8:27:EB") || mac.startsWith("52:54:00"))
         {
             emit(hostFound(list.at(1), mac));
@@ -175,6 +190,11 @@ void SearchPage::checkResults()
         checkResultsTimer.start();
 }
 #endif
+
+void SearchPage::gotError(const QString title, const QString message)
+{
+    QMessageBox::warning(NULL, title, message, QMessageBox::Close);
+}
 
 void SearchPage::searchFinished()
 {
