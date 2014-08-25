@@ -1,0 +1,55 @@
+#include "quickstartwizard.h"
+#include "intropage.h"
+#include "advancedsearchpage.h"
+#include "searchpage.h"
+#include "conclusionpage.h"
+#include <QVariant>
+#include <QIcon>
+
+#if defined(Q_OS_UNIX)
+#include <unistd.h>
+#endif
+
+QuickStartWizard::QuickStartWizard(QWidget *parent) :
+    QWizard(parent)
+{
+#if defined(Q_OS_UNIX)
+    setProperty("hasAdminRights", !geteuid());
+#elif defined(Q_OS_WIN)
+    setProperty("hasAdminRights", true);
+#else
+    setProperty("hasAdminRights", false);
+#endif
+
+
+    setWindowTitle(tr("Jeedom"));
+    setWindowIcon(QIcon(":/images/icon"));
+
+    setWizardStyle(QWizard::ModernStyle);
+
+    setPage(Page_Intro, new IntroPage);
+    setPage(Page_AdvancedSearch, new AdvancedSearchPage);
+    setPage(Page_Search, new SearchPage);
+    setPage(Page_Conclusion, new ConclusionPage);
+
+    setPixmap(QWizard::LogoPixmap, QPixmap(":/images/logo"));
+}
+
+int QuickStartWizard::nextId() const
+{
+    switch (currentId()) {
+    case Page_Intro:
+        if (field("advancedSearch").toBool()) {
+            return Page_AdvancedSearch;
+        } else {
+            return Page_Search;
+        }
+    case Page_AdvancedSearch:
+        return Page_Search;
+    case Page_Search:
+        return Page_Conclusion;
+    case Page_Conclusion:
+    default:
+        return -1;
+    }
+}
