@@ -27,10 +27,10 @@ QuickStartWizard::QuickStartWizard(QWidget *parent) :
 
     setWizardStyle(QWizard::ModernStyle);
 
-    setPage(Page_Intro, new IntroPage);
-    setPage(Page_AdvancedSearch, new AdvancedSearchPage);
-    setPage(Page_Search, new SearchPage);
-    setPage(Page_Conclusion, new ConclusionPage);
+    setPage(Page_Intro, new IntroPage(this));
+    setPage(Page_AdvancedSearch, new AdvancedSearchPage(this));
+    setPage(Page_Search, new SearchPage(this));
+    setPage(Page_Conclusion, new ConclusionPage(this));
 
     setPixmap(QWizard::LogoPixmap, QPixmap(":/images/logo"));
 }

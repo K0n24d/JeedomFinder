@@ -4,7 +4,11 @@
 #include "searchworker.h"
 #include <QTimer>
 
+#ifdef Q_OS_WIN
+#include <QProcess>
+#else
 class QProcess;
+#endif
 
 class PingSearchWorker : public SearchWorker
 {
@@ -16,9 +20,9 @@ public:
 protected:
     bool stopping;
     QList<QProcess*> pingProcesses;
-    QTimer checkResultsTimer;
+    QTimer *checkResultsTimer;
 #ifdef Q_OS_WIN
-    QProcess arpTableProcess;
+    QProcess *arpTableProcess;
 #endif
 protected slots:
     void checkResults();

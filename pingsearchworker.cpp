@@ -9,10 +9,6 @@
 PingSearchWorker::PingSearchWorker(QObject *parent) :
     SearchWorker(parent), stopping(false)
 {
-    checkResultsTimer.setInterval(1000);
-    checkResultsTimer.setSingleShot(true);
-
-    connect(&checkResultsTimer, SIGNAL(timeout()), this, SLOT(checkResults()));
 }
 
 PingSearchWorker::~PingSearchWorker()
@@ -29,7 +25,16 @@ void PingSearchWorker::discover()
 {
     QStringList arguments;
 
-    checkResultsTimer.start();
+#ifdef Q_OS_WIN
+    arpTableProcess = new QProcess(this);
+    connect(arpTableProcess, SIGNAL(finished(int)), this, SLOT(gotArpResults(int)));
+#endif
+
+    checkResultsTimer = new QTimer(this);
+    checkResultsTimer->setInterval(1000);
+    checkResultsTimer->setSingleShot(true);
+    connect(checkResultsTimer, SIGNAL(timeout()), this, SLOT(checkResults()));
+    checkResultsTimer->start();
 
     foreach(QNetworkInterface interface, QNetworkInterface::allInterfaces())
     {
@@ -66,7 +71,6 @@ void PingSearchWorker::discover()
                             pingProcesses.removeOne(process);
                         }
                     }
-
                     QCoreApplication::processEvents(QEventLoop::AllEvents, 100);
                 }
 
@@ -110,22 +114,29 @@ void PingSearchWorker::discover()
 
 void PingSearchWorker::stop()
 {
-    checkResultsTimer.stop();
+    checkResultsTimer->stop();
+
+#ifdef Q_OS_WIN
+    if(arpTableProcess->state()!=QProcess::NotRunning)
+        arpTableProcess->kill();
+#endif
+
     stopping = true;
 }
 
 #ifdef Q_OS_WIN
 void PingSearchWorker::checkResults()
 {
-    if(arpTableProcess.state()!=QProcess::NotRunning)
+    if(arpTableProcess->state()!=QProcess::NotRunning)
     {
-        if(numberOfSearchWorkersRunning>0)
-            checkResultsTimer.start();
+        checkResultsTimer->start();
         return;
     }
 
-    if(!arpTableProcess.start("arp", QStringList() << "-a"))
-        emit(error(Q_FUNC_INFO, tr("Impossible de lancer l'utilitaire arp.")));
+    arpTableProcess->start("arp", QStringList("-a"));
+
+    if(!arpTableProcess->waitForStarted())
+        emit(error(Q_FUNC_INFO, tr("Impossible de lancer l'utilitaire arp.\n%1").arg(arpTableProcess->errorString())));
 }
 
 void PingSearchWorker::gotArpResults(int)
@@ -136,9 +147,9 @@ void PingSearchWorker::gotArpResults(int)
                " +\\([^ ]+\\)"
                " .*");
                        */
-    while(!arpTableProcess.atEnd())
+    while(!arpTableProcess->atEnd())
     {
-        QString line(arpTableProcess.readLine());
+        QString line(arpTableProcess->readLine());
         int pos = rx.indexIn(line);
         if(pos<0)
             continue;
@@ -151,13 +162,20 @@ void PingSearchWorker::gotArpResults(int)
         QString mac = list.at(2).split("-").join(":").toUpper();
         if(mac.startsWith("B8:27:EB") || mac.startsWith("52:54:00"))
         {
-            emit(hostFound(list.at(1), mac));
+            QHostInfo hostInfo = QHostInfo::fromName(list.at(1));
+
+            Host thisHost;
+            thisHost.name = hostInfo.hostName();
+            thisHost.ip = list.at(1);
+            thisHost.desc = tr("MAC : %1").arg(mac);
+            thisHost.url = QString("http://%1/jeedom").arg(thisHost.ip);
+            emit(host(thisHost));
         }
 //        QHostInfo hostInfo(QHostInfo::fromName(address));
 //        QString name = hostInfo.hostName();
     }
 
-    checkResultsTimer.start();
+    checkResultsTimer->start();
 }
 #endif
 
@@ -205,6 +223,6 @@ void PingSearchWorker::checkResults()
         emit(error(Q_FUNC_INFO, tr("Impossible d'ouvrir /proc/net/arp: %1").arg(arpTable.errorString())));
 
     if(!stopping)
-        checkResultsTimer.start();
+        checkResultsTimer->start();
 }
 #endif

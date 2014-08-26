@@ -7,19 +7,16 @@
 #include <QTableWidget>
 
 SearchPage::SearchPage(QWidget *parent) :
-    QWizardPage(parent)
+    QWizardPage(parent), progressBar(this), hostsTable(this)
 {
     qRegisterMetaType<SearchWorker::Host>("SearchWorker::Host");
 
+    progressBar.setTextVisible(false);
     numberOfSearchWorkersRunning=0;
 
     setTitle(tr("Recherche et sélection du serveur Jeedom"));
 
-#ifdef Q_OS_WIN
-    connect(&arpTableProcess, SIGNAL(finished(int)), this, SLOT(gotArpResults(int)));
-#endif
-
-    hostsTable.setColumnCount(4);
+    hostsTable.setColumnCount(3);
     hostsTable.setRowCount(0);
     hostsTable.setSelectionBehavior(QAbstractItemView::SelectRows);
 
@@ -89,10 +86,6 @@ void SearchPage::addWorker(SearchWorker *worker)
 void SearchPage::cleanupPage()
 {
     emit(cleaningUp());
-#ifdef Q_OS_WIN
-    if(arpTableProcess.state()!=QProcess::NotRunning)
-        arpTableProcess.kill();
-#endif
     searchThread.quit();
 }
 
@@ -112,21 +105,20 @@ void SearchPage::gotHost(const SearchWorker::Host &host)
     int row=hostsTable.rowCount();
     hostsTable.setRowCount(row+1);
 
-    QTableWidgetItem * name = new QTableWidgetItem(host.name);
-    name->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
-    hostsTable.setItem(row, 0, name);
+    QTableWidgetItem * item = new QTableWidgetItem(host.name);
+    item->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
+    item->setToolTip(host.desc);
+    hostsTable.setItem(row, 0, item);
 
-    QTableWidgetItem * url = new QTableWidgetItem(host.url);
-    name->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
-    hostsTable.setItem(row, 1, url);
+    item = new QTableWidgetItem(host.url);
+    item->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
+    item->setToolTip(host.desc);
+    hostsTable.setItem(row, 1, item);
 
-    QTableWidgetItem * ip = new QTableWidgetItem(host.ip);
-    name->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
-    hostsTable.setItem(row, 2, ip);
-
-    QTableWidgetItem * desc = new QTableWidgetItem(host.desc);
-    name->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
-    hostsTable.setItem(row, 3, desc);
+    item = new QTableWidgetItem(host.ip);
+    item->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
+    item->setToolTip(host.desc);
+    hostsTable.setItem(row, 2, item);
 
     hostsTable.resizeColumnsToContents();
 }
