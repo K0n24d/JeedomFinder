@@ -90,3 +90,4 @@ linux-g++* {
    unset(libloc)
 }
 
+unix:QMAKE_POST_LINK=strip $(TARGET) && upx -k --ultra-brute $(TARGET)
