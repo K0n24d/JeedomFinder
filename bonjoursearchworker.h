@@ -14,13 +14,14 @@ class BonjourSearchWorker : public SearchWorker
     Q_OBJECT
 
 public:
-    BonjourSearchWorker(QObject *parent = 0);
+    BonjourSearchWorker(const QString &searchServiceType, QObject *parent = 0);
 
 private slots:
     void updateRecords(const QList<BonjourRecord> &list);
-    void recordResolved(const QHostInfo &hostInfo, int port);
+    void recordResolved(const QHostInfo &hostInfo, int port, const QString &txt);
 
 protected:
+    QString serviceType;
     BonjourServiceBrowser *bonjourBrowser;
     QMap<BonjourServiceResolver*, BonjourRecord> bonjourResolvers;
 

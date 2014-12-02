@@ -1,6 +1,7 @@
 #ifndef SEARCHWORKER_H
 #define SEARCHWORKER_H
 
+#include "host.h"
 #include <QObject>
 
 class SearchWorker : public QObject
@@ -8,17 +9,20 @@ class SearchWorker : public QObject
     Q_OBJECT
 public:
     explicit SearchWorker(QObject *parent = 0);
+
+    /*
     struct Host {
         QString name;
         QString ip;
         QString desc;
         QString url;
     };
+    */
 
 signals:
     void finished();
     void error(const QString & title, const QString & message);
-    void host(const SearchWorker::Host & host);
+    void host(Host * host);
 
 public slots:
     virtual void discover(){};

@@ -86,8 +86,8 @@ void BonjourServiceResolver::bonjourSocketReadyRead()
 
 void BonjourServiceResolver::bonjourResolveReply(DNSServiceRef, DNSServiceFlags ,
                                     quint32 , DNSServiceErrorType errorCode,
-                                    const char *, const char *hosttarget, quint16 port,
-                                    quint16 , const char *, void *context)
+                                    const char *hostname, const char *hosttarget, quint16 port,
+                                    quint16 txtLen, const unsigned char *txtRecord, void *context)
 {
     BonjourServiceResolver *serviceResolver = static_cast<BonjourServiceResolver *>(context);
     if (errorCode != kDNSServiceErr_NoError) {
@@ -100,12 +100,15 @@ void BonjourServiceResolver::bonjourResolveReply(DNSServiceRef, DNSServiceFlags 
         }
 #endif
     serviceResolver->bonjourPort = port;
+    serviceResolver->bonjourTXT = QString::fromUtf8((const char *)(txtRecord), txtLen);
+    serviceResolver->bonjourHostName = QString::fromUtf8(hostname);
+    serviceResolver->bonjourHostTarget = QString::fromUtf8(hosttarget);
     QHostInfo::lookupHost(QString::fromUtf8(hosttarget),
                           serviceResolver, SLOT(finishConnect(const QHostInfo &)));
 }
 
 void BonjourServiceResolver::finishConnect(const QHostInfo &hostInfo)
 {
-    emit bonjourRecordResolved(hostInfo, bonjourPort);
+    emit bonjourRecordResolved(hostInfo, bonjourPort, bonjourTXT);
     QMetaObject::invokeMethod(this, "cleanupResolve", Qt::QueuedConnection);
 }

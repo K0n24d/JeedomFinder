@@ -5,11 +5,12 @@
 #include <QVBoxLayout>
 #include <QMessageBox>
 #include <QTableWidget>
+#include <QLabel>
 
 SearchPage::SearchPage(QWidget *parent) :
     QWizardPage(parent), progressBar(this), hostsTable(this)
 {
-    qRegisterMetaType<SearchWorker::Host>("SearchWorker::Host");
+//    qRegisterMetaType<Host>("Host");
 
     progressBar.setTextVisible(false);
     numberOfSearchWorkersRunning=0;
@@ -50,7 +51,10 @@ void SearchPage::initializePage()
     numberOfSearchWorkersRunning=0;
 
     if(field("zeroconf").toBool())
-        addWorker(new BonjourSearchWorker);
+    {
+        addWorker(new BonjourSearchWorker(QString("_https._tcp")));
+        addWorker(new BonjourSearchWorker(QString("_http._tcp")));
+    }
 
     if(field("ping").toBool())
         addWorker(new PingSearchWorker);
@@ -76,7 +80,7 @@ void SearchPage::addWorker(SearchWorker *worker)
     connect(worker, SIGNAL(finished()), this, SLOT(searchFinished()));
     connect(worker, SIGNAL(error(QString,QString)), this, SLOT(gotError(QString,QString)));
 
-    connect(worker, SIGNAL(host(SearchWorker::Host)), this, SLOT(gotHost(SearchWorker::Host)));
+    connect(worker, SIGNAL(host(Host*)), this, SLOT(gotHost(Host*)));
     connect(&searchThread, SIGNAL(finished()), worker, SLOT(deleteLater()));
     connect(&searchThread, SIGNAL(started()), worker, SLOT(discover()));
     connect(this, SIGNAL(cleaningUp()), worker, SLOT(stop()));
@@ -94,33 +98,45 @@ bool SearchPage::isComplete() const
     return false;
 }
 
-void SearchPage::gotHost(const SearchWorker::Host &host)
+void SearchPage::gotHost(Host *host)
 {
 //    QMessageBox::information(NULL, Q_FUNC_INFO, tr("Nom: %1, IPv4: %2, Description: %3").arg(name, ipv4, description));
-    if(!hostsTable.findItems(host.url, Qt::MatchExactly).isEmpty())
+
+
+    if(!hostsTable.findItems(host->url, Qt::MatchExactly).isEmpty())
+    {
+        host->deleteLater();
         return;
+    }
 
     hostsTable.setEnabled(true);
 
     int row=hostsTable.rowCount();
     hostsTable.setRowCount(row+1);
 
-    QTableWidgetItem * item = new QTableWidgetItem(host.name);
+    QTableWidgetItem * item = new QTableWidgetItem(host->name);
     item->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
-    item->setToolTip(host.desc);
+    item->setToolTip(host->desc);
     hostsTable.setItem(row, 0, item);
 
-    item = new QTableWidgetItem(host.url);
+    QLabel *label = new QLabel(QString("<html><body><a href=\"%1\">%2</a></body></html>").arg(host->url, host->url));
+    label->setOpenExternalLinks(true);
+    label->setTextInteractionFlags(Qt::LinksAccessibleByKeyboard|Qt::LinksAccessibleByMouse);
+    label->setToolTip(host->desc);
+    hostsTable.setCellWidget(row, 1, label);
+
+    item = new QTableWidgetItem();
     item->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
-    item->setToolTip(host.desc);
+    item->setToolTip(host->desc);
     hostsTable.setItem(row, 1, item);
 
-    item = new QTableWidgetItem(host.ip);
+    item = new QTableWidgetItem(host->ip);
     item->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
-    item->setToolTip(host.desc);
+    item->setToolTip(host->desc);
     hostsTable.setItem(row, 2, item);
 
     hostsTable.resizeColumnsToContents();
+    host->deleteLater();
 }
 
 void SearchPage::gotError(const QString &title, const QString &message)

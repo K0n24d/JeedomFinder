@@ -25,7 +25,8 @@ SOURCES += main.cpp\
     Bonjour/bonjourserviceresolver.cpp \
     Bonjour/bonjourservicebrowser.cpp \
     bonjoursearchworker.cpp \
-    searchworker.cpp
+    searchworker.cpp \
+    host.cpp
 
 HEADERS  += \
     quickstartwizard.h \
@@ -38,7 +39,8 @@ HEADERS  += \
     Bonjour/bonjourservicebrowser.h \
     Bonjour/bonjourrecord.h \
     bonjoursearchworker.h \
-    searchworker.h
+    searchworker.h \
+    host.h
 
 FORMS    +=
 
@@ -90,4 +92,6 @@ linux-g++* {
    unset(libloc)
 }
 
-unix:QMAKE_POST_LINK=strip $(TARGET) && upx -k --ultra-brute $(TARGET)
+CONFIG(release, debug|release) {
+  unix:QMAKE_POST_LINK=strip $(TARGET) && upx -k --ultra-brute $(TARGET)
+}

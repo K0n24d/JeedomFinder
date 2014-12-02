@@ -8,6 +8,7 @@
 #include <QTableWidget>
 #include <QProcess>
 #include "searchworker.h"
+#include "host.h"
 
 class QProcess;
 
@@ -30,7 +31,7 @@ private:
 signals:
     void cleaningUp();
 public slots:
-    void gotHost(const SearchWorker::Host &host);
+    void gotHost(Host *host);
     void gotError(const QString &title, const QString &message);
     void searchFinished();
 };
