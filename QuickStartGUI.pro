@@ -95,3 +95,6 @@ linux-g++* {
 CONFIG(release, debug|release) {
   unix:QMAKE_POST_LINK=strip $(TARGET) && upx -k --ultra-brute $(TARGET)
 }
+
+win32:RC_FILE += \
+    icon.rc
