@@ -92,7 +92,12 @@ void SearchPage::resizeEvent(QResizeEvent *)
 {
     hostsTable.setColumnWidth(0, hostsTable.width()/4);
     hostsTable.setColumnWidth(2, hostsTable.width()/4);
+
+#if QT_VERSION >= 0x050000
     hostsTable.horizontalHeader()->setSectionResizeMode(1, QHeaderView::Stretch);
+#else
+    hostsTable.horizontalHeader()->setResizeMode(1, QHeaderView::Stretch);
+#endif
 }
 
 void SearchPage::cleanupPage()
