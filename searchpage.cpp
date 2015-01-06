@@ -6,6 +6,7 @@
 #include <QMessageBox>
 #include <QTableWidget>
 #include <QLabel>
+#include <QHeaderView>
 
 SearchPage::SearchPage(QWidget *parent) :
     QWizardPage(parent), progressBar(this), hostsTable(this)
@@ -87,6 +88,13 @@ void SearchPage::addWorker(SearchWorker *worker)
     numberOfSearchWorkersRunning++;
 }
 
+void SearchPage::resizeEvent(QResizeEvent *)
+{
+    hostsTable.setColumnWidth(0, hostsTable.width()/4);
+    hostsTable.setColumnWidth(2, hostsTable.width()/4);
+    hostsTable.horizontalHeader()->setSectionResizeMode(1, QHeaderView::Stretch);
+}
+
 void SearchPage::cleanupPage()
 {
     emit(cleaningUp());
@@ -135,7 +143,6 @@ void SearchPage::gotHost(Host *host)
     item->setToolTip(host->desc);
     hostsTable.setItem(row, 2, item);
 
-    hostsTable.resizeColumnsToContents();
     host->deleteLater();
 }
 

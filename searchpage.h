@@ -28,6 +28,9 @@ private:
     QTableWidget hostsTable;
     int numberOfSearchWorkersRunning;
 
+protected:
+    void resizeEvent(QResizeEvent *);
+
 signals:
     void cleaningUp();
 public slots:
