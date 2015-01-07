@@ -4,7 +4,7 @@
 #include "searchworker.h"
 #include <QTimer>
 
-#ifdef Q_OS_WIN
+#if defined(Q_OS_MAC) || defined(Q_OS_WIN)
 #include <QProcess>
 #else
 class QProcess;
@@ -25,14 +25,14 @@ protected:
     QTimer *checkResultsTimer;
     QNetworkAccessManager *manager;
     QList<QString> checkedMACs;
-#ifdef Q_OS_WIN
+#if defined(Q_OS_MAC) || defined(Q_OS_WIN)
     QProcess *arpTableProcess;
 #endif
     void checkWebPage(const Host *host, QString url);
 
 protected slots:
     void checkResults();
-#ifdef Q_OS_WIN
+#if defined(Q_OS_MAC) || defined(Q_OS_WIN)
     void gotArpResults(int);
 #endif
     void replyFinished(QNetworkReply* reply);

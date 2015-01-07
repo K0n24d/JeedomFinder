@@ -37,7 +37,7 @@ void PingSearchWorker::discover()
 {
     QStringList arguments;
 
-#ifdef Q_OS_WIN
+#if defined(Q_OS_MAC) || defined(Q_OS_WIN)
     arpTableProcess = new QProcess(this);
     connect(arpTableProcess, SIGNAL(finished(int)), this, SLOT(gotArpResults(int)));
 #endif
@@ -83,7 +83,11 @@ void PingSearchWorker::discover()
             {
                 QHostAddress hostaddress(address);
 
+#ifdef Q_OS_MAC
+                while(pingProcesses.count()>40)
+#else
                 while(pingProcesses.count()>50)
+#endif
                 {
                     foreach(QProcess *process, pingProcesses)
                     {
@@ -110,7 +114,8 @@ void PingSearchWorker::discover()
                 process->start("ping", arguments);
                 if(!process->waitForStarted())
                 {
-                    emit(error(Q_FUNC_INFO, tr("Impossible de lancer ping %1").arg(process->errorString())));
+                    emit(error(Q_FUNC_INFO, tr("Impossible de lancer ping :\n%1").arg(process->errorString())));
+                    break;
                 }
 
                 address++;
@@ -141,7 +146,7 @@ void PingSearchWorker::stop()
 {
     checkResultsTimer->stop();
 
-#ifdef Q_OS_WIN
+#if defined(Q_OS_MAC) || defined(Q_OS_WIN)
     if(arpTableProcess->state()!=QProcess::NotRunning)
         arpTableProcess->kill();
 #endif
@@ -180,6 +185,68 @@ void PingSearchWorker::gotArpResults(int)
             continue;
 
         QString mac = list.at(2).split("-").join(":").toUpper();
+
+        if(checkedMACs.contains(mac))
+            continue;
+
+        if(mac.startsWith("B8:27:EB"))
+        {
+            checkedMACs << mac;
+            QHostInfo hostInfo = QHostInfo::fromName(list.at(1));
+
+            Host thisHost;
+            thisHost.name = hostInfo.hostName();
+            thisHost.ip = list.at(1);
+            thisHost.desc = tr("MAC : %1").arg(mac);
+
+            checkWebPage(&thisHost,QString("https://%1/").arg(thisHost.name));
+            checkWebPage(&thisHost,QString("https://%1/jeedom/").arg(thisHost.name));
+            checkWebPage(&thisHost,QString("http://%1/").arg(thisHost.name));
+            checkWebPage(&thisHost,QString("http://%1/jeedom/").arg(thisHost.name));
+        }
+    }
+
+    checkResultsTimer->start();
+}
+#endif
+
+#ifdef Q_OS_MAC
+void PingSearchWorker::checkResults()
+{
+    if(arpTableProcess->state()!=QProcess::NotRunning)
+    {
+        checkResultsTimer->start();
+        return;
+    }
+
+    arpTableProcess->start("arp", QStringList("-a"));
+
+    if(!arpTableProcess->waitForStarted())
+        emit(error(Q_FUNC_INFO, tr("Impossible de lancer l'utilitaire arp.\n%1").arg(arpTableProcess->errorString())));
+}
+
+void PingSearchWorker::gotArpResults(int)
+{
+    QRegExp rx("^? *\\(([0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3})\\) at ([^ :]+:[^ :]+:[^ :]+:[^ :]+:[^ :]+).*$");
+
+    while(!arpTableProcess->atEnd())
+    {
+        QString line(arpTableProcess->readLine());
+        int pos = rx.indexIn(line);
+        if(pos<0)
+            continue;
+
+        QStringList list = rx.capturedTexts();
+        if(list.count()!=3)
+            continue;
+
+        QString mac;
+        foreach(QString part, list.at(2).split(":"))
+        {
+            mac.append(part.rightJustified(2, '0').toUpper());
+            mac.append(':');
+        }
+        mac.chop(1);
 
         if(checkedMACs.contains(mac))
             continue;

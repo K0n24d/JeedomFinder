@@ -47,7 +47,7 @@ FORMS    +=
 RESOURCES += \
     resources.qrc
 
-unix:LIBS+=-ldns_sd -lavahi-client -lavahi-common -ldbus-1
+linux-g++*:LIBS+=-ldns_sd -lavahi-client -lavahi-common -ldbus-1
 win32:LIBS+=-ldnssd
 win32:LIBPATH+="C:/Program Files/Bonjour SDK/Lib/Win32"
 win32:INCLUDEPATH+="C:/Program Files/Bonjour SDK/Include"
@@ -93,8 +93,11 @@ linux-g++* {
 }
 
 CONFIG(release, debug|release) {
-  unix:QMAKE_POST_LINK=strip $(TARGET) && upx -k --ultra-brute $(TARGET)
+  linux-g++*:QMAKE_POST_LINK=strip $(TARGET) && upx -k --ultra-brute $(TARGET)
+  mac*:QMAKE_POST_LINK=macdeployqt QuickStartGUI.app $(TARGET) -dmg
 }
 
 win32:RC_FILE += \
     icon.rc
+
+QMAKE_MAC_SDK = macosx10.9
