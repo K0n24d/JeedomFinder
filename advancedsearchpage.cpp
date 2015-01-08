@@ -3,10 +3,13 @@
 #include <QCheckBox>
 #include <QVBoxLayout>
 #include <QVariant>
+#include <QtDebug>
 
 AdvancedSearchPage::AdvancedSearchPage(QWidget *parent) :
     QWizardPage(parent)
 {
+    qDebug() << Q_FUNC_INFO << "Start";
+
     setTitle(tr("Sélection des modes de recherche"));
     setSubTitle(tr("Veuillez sélectionner ci-dessous les options utilisées lors de la recherche"));
 
@@ -36,10 +39,14 @@ AdvancedSearchPage::AdvancedSearchPage(QWidget *parent) :
     layout->addWidget(modesRecherche);
     layout->addStretch(1);
     setLayout(layout);
+
+    qDebug() << Q_FUNC_INFO << "End";
 }
 
 void AdvancedSearchPage::initializePage()
 {
+    qDebug() << Q_FUNC_INFO << "Start";
+
     if(!parent()->property("hasAdminRights").toBool())
     {
         arpscan->setDisabled(true);
@@ -47,6 +54,8 @@ void AdvancedSearchPage::initializePage()
     }
     else
         arpscan->setChecked(true);
+
+    qDebug() << Q_FUNC_INFO << "End";
 }
 
 bool AdvancedSearchPage::isComplete() const

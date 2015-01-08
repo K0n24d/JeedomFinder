@@ -101,3 +101,4 @@ win32:RC_FILE += \
     icon.rc
 
 QMAKE_MAC_SDK = macosx10.9
+DEFINES *= QT_USE_QSTRINGBUILDER

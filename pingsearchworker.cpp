@@ -6,10 +6,13 @@
 #include <QTextStream>
 #include <QHostInfo>
 #include <QNetworkReply>
+#include <QtDebug>
 
 PingSearchWorker::PingSearchWorker(QObject *parent) :
     SearchWorker(parent), stopping(false)
 {
+    qDebug() << Q_FUNC_INFO;
+
     checkResultsTimer=NULL;
     manager=NULL;
 }
@@ -35,6 +38,8 @@ PingSearchWorker::~PingSearchWorker()
 
 void PingSearchWorker::discover()
 {
+    qDebug() << Q_FUNC_INFO;
+
     QStringList arguments;
 
 #if defined(Q_OS_MAC) || defined(Q_OS_WIN)
@@ -144,6 +149,8 @@ void PingSearchWorker::discover()
 
 void PingSearchWorker::stop()
 {
+    qDebug() << Q_FUNC_INFO;
+
     checkResultsTimer->stop();
 
 #if defined(Q_OS_MAC) || defined(Q_OS_WIN)
@@ -154,9 +161,11 @@ void PingSearchWorker::stop()
     stopping = true;
 }
 
-#ifdef Q_OS_WIN
+#if defined(Q_OS_WIN) || defined(Q_OS_MAC)
 void PingSearchWorker::checkResults()
 {
+    qDebug() << Q_FUNC_INFO;
+
     if(arpTableProcess->state()!=QProcess::NotRunning)
     {
         checkResultsTimer->start();
@@ -171,64 +180,14 @@ void PingSearchWorker::checkResults()
 
 void PingSearchWorker::gotArpResults(int)
 {
+    qDebug() << Q_FUNC_INFO;
+
+#ifdef Q_OS_WIN
     QRegExp rx("^ *([0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}) *([^ -]+-[^ -]+-[^ -]+-[^ -]+-[^ -]+-[^ -]+).*$");
-
-    while(!arpTableProcess->atEnd())
-    {
-        QString line(arpTableProcess->readLine());
-        int pos = rx.indexIn(line);
-        if(pos<0)
-            continue;
-
-        QStringList list = rx.capturedTexts();
-        if(list.count()!=3)
-            continue;
-
-        QString mac = list.at(2).split("-").join(":").toUpper();
-
-        if(checkedMACs.contains(mac))
-            continue;
-
-        if(mac.startsWith("B8:27:EB"))
-        {
-            checkedMACs << mac;
-            QHostInfo hostInfo = QHostInfo::fromName(list.at(1));
-
-            Host thisHost;
-            thisHost.name = hostInfo.hostName();
-            thisHost.ip = list.at(1);
-            thisHost.desc = tr("MAC : %1").arg(mac);
-
-            checkWebPage(&thisHost,QString("https://%1/").arg(thisHost.name));
-            checkWebPage(&thisHost,QString("https://%1/jeedom/").arg(thisHost.name));
-            checkWebPage(&thisHost,QString("http://%1/").arg(thisHost.name));
-            checkWebPage(&thisHost,QString("http://%1/jeedom/").arg(thisHost.name));
-        }
-    }
-
-    checkResultsTimer->start();
-}
+#else
+    QRegExp rx("^? *\\(([0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3})\\) at ([^ :]+:[^ :]+:[^ :]+:[^ :]+:[^ :]+).*$");
 #endif
 
-#ifdef Q_OS_MAC
-void PingSearchWorker::checkResults()
-{
-    if(arpTableProcess->state()!=QProcess::NotRunning)
-    {
-        checkResultsTimer->start();
-        return;
-    }
-
-    arpTableProcess->start("arp", QStringList("-a"));
-
-    if(!arpTableProcess->waitForStarted())
-        emit(error(Q_FUNC_INFO, tr("Impossible de lancer l'utilitaire arp.\n%1").arg(arpTableProcess->errorString())));
-}
-
-void PingSearchWorker::gotArpResults(int)
-{
-    QRegExp rx("^? *\\(([0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3})\\) at ([^ :]+:[^ :]+:[^ :]+:[^ :]+:[^ :]+).*$");
-
     while(!arpTableProcess->atEnd())
     {
         QString line(arpTableProcess->readLine());
@@ -240,6 +199,9 @@ void PingSearchWorker::gotArpResults(int)
         if(list.count()!=3)
             continue;
 
+#ifdef Q_OS_WIN
+        QString mac = list.at(2).split("-").join(":").toUpper();
+#else
         QString mac;
         foreach(QString part, list.at(2).split(":"))
         {
@@ -247,6 +209,7 @@ void PingSearchWorker::gotArpResults(int)
             mac.append(':');
         }
         mac.chop(1);
+#endif
 
         if(checkedMACs.contains(mac))
             continue;
@@ -267,6 +230,7 @@ void PingSearchWorker::gotArpResults(int)
             checkWebPage(&thisHost,QString("http://%1/jeedom/").arg(thisHost.name));
         }
     }
+    arpTableProcess->close();
 
     checkResultsTimer->start();
 }
@@ -275,6 +239,8 @@ void PingSearchWorker::gotArpResults(int)
 #ifdef Q_OS_LINUX
 void PingSearchWorker::checkResults()
 {
+    qDebug() << Q_FUNC_INFO;
+
     QFile arpTable("/proc/net/arp");
 
     if(arpTable.open(QFile::ReadOnly))
@@ -329,6 +295,8 @@ void PingSearchWorker::checkResults()
 
 void PingSearchWorker::checkWebPage(const Host *host, QString url)
 {
+    qDebug() << Q_FUNC_INFO;
+
     Host * thisHost = new Host(host, this);
     if(thisHost->url.isEmpty())
         thisHost->url = url;
@@ -339,6 +307,8 @@ void PingSearchWorker::checkWebPage(const Host *host, QString url)
 
 void PingSearchWorker::replyFinished(QNetworkReply *reply)
 {
+    qDebug() << Q_FUNC_INFO;
+
     reply->deleteLater();
     Host *thisHost = static_cast<Host*>(reply->request().originatingObject());
     if(!thisHost)

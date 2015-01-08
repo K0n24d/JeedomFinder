@@ -2,10 +2,13 @@
 #include <QLabel>
 #include <QVBoxLayout>
 #include <QRadioButton>
+#include <QtDebug>
 
 IntroPage::IntroPage(QWidget *parent) :
     QWizardPage(parent)
 {
+    qDebug() << Q_FUNC_INFO << "Start";
+
     setTitle(tr("Démarrage rapide Jeedom"));
     QPixmap watermark(":images/panel");
     setPixmap(QWizard::WatermarkPixmap, watermark);
@@ -32,4 +35,6 @@ IntroPage::IntroPage(QWidget *parent) :
     layout->addWidget(advancedSearch);
     layout->addStretch(1);
     setLayout(layout);
+
+    qDebug() << Q_FUNC_INFO << "End";
 }

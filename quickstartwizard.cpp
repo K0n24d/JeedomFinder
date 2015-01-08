@@ -5,6 +5,7 @@
 #include "conclusionpage.h"
 #include <QVariant>
 #include <QIcon>
+#include <QtDebug>
 
 #if defined(Q_OS_UNIX)
 #include <unistd.h>
@@ -13,6 +14,8 @@
 QuickStartWizard::QuickStartWizard(QWidget *parent) :
     QWizard(parent)
 {
+    qDebug() << Q_FUNC_INFO << "Start";
+
 #if defined(Q_OS_UNIX)
     setProperty("hasAdminRights", !geteuid());
 #elif defined(Q_OS_WIN)
@@ -33,6 +36,8 @@ QuickStartWizard::QuickStartWizard(QWidget *parent) :
     setPage(Page_Conclusion, new ConclusionPage(this));
 
     setPixmap(QWizard::LogoPixmap, QPixmap(":/images/logo"));
+
+    qDebug() << Q_FUNC_INFO << "End";
 }
 
 int QuickStartWizard::nextId() const

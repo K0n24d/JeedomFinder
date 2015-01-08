@@ -3,18 +3,25 @@
 #include "bonjourserviceresolver.h"
 
 #include <QRegExp>
+#include <QtDebug>
 
 BonjourSearchWorker::BonjourSearchWorker(const QString &searchServiceType, QObject *parent)
     : SearchWorker(parent), serviceType(searchServiceType)
 {
+    qDebug() << Q_FUNC_INFO << "Start";
+
     bonjourBrowser = new BonjourServiceBrowser(this);
 
     connect(bonjourBrowser, SIGNAL(currentBonjourRecordsChanged(const QList<BonjourRecord> &)),
             this, SLOT(updateRecords(const QList<BonjourRecord> &)));
+
+    qDebug() << Q_FUNC_INFO << "End";
 }
 
 void BonjourSearchWorker::discover()
 {
+    qDebug() << Q_FUNC_INFO;
+
     bonjourBrowser->browseForServiceType(serviceType);
 }
 
@@ -24,6 +31,8 @@ void BonjourSearchWorker::stop()
 
 void BonjourSearchWorker::updateRecords(const QList<BonjourRecord> &list)
 {
+    qDebug() << Q_FUNC_INFO;
+
     foreach (BonjourRecord record, list)
     {
         BonjourServiceResolver *bonjourResolver = new BonjourServiceResolver(this);
@@ -38,6 +47,8 @@ void BonjourSearchWorker::updateRecords(const QList<BonjourRecord> &list)
 
 void BonjourSearchWorker::recordResolved(const QHostInfo &hostInfo, int port, const QString &txt)
 {
+    qDebug() << Q_FUNC_INFO << hostInfo.hostName() << hostInfo.addresses() << port << txt;
+
     BonjourServiceResolver *resolver = static_cast<BonjourServiceResolver *>(sender());
     BonjourRecord record = bonjourResolvers.value(resolver);
     bonjourResolvers.remove(resolver);

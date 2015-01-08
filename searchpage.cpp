@@ -7,10 +7,12 @@
 #include <QTableWidget>
 #include <QLabel>
 #include <QHeaderView>
+#include <QtDebug>
 
 SearchPage::SearchPage(QWidget *parent) :
     QWizardPage(parent), progressBar(this), hostsTable(this)
 {
+    qDebug() << Q_FUNC_INFO << "Start";
 //    qRegisterMetaType<Host>("Host");
 
     progressBar.setTextVisible(false);
@@ -32,10 +34,14 @@ SearchPage::SearchPage(QWidget *parent) :
     layout->addStretch();
     layout->addWidget(&progressBar);
     setLayout(layout);
+
+    qDebug() << Q_FUNC_INFO << "End";
 }
 
 void SearchPage::initializePage()
 {
+    qDebug() << Q_FUNC_INFO;
+
     QString subTitle;
 
     if(!field("advancedSearch").toBool())
@@ -77,6 +83,8 @@ void SearchPage::initializePage()
 
 void SearchPage::addWorker(SearchWorker *worker)
 {
+    qDebug() << Q_FUNC_INFO;
+
     worker->moveToThread(&searchThread);
     connect(worker, SIGNAL(finished()), this, SLOT(searchFinished()));
     connect(worker, SIGNAL(error(QString,QString)), this, SLOT(gotError(QString,QString)));
@@ -90,6 +98,8 @@ void SearchPage::addWorker(SearchWorker *worker)
 
 void SearchPage::resizeEvent(QResizeEvent *)
 {
+    qDebug() << Q_FUNC_INFO;
+
     hostsTable.setColumnWidth(0, hostsTable.width()/4);
     hostsTable.setColumnWidth(2, hostsTable.width()/4);
 
@@ -113,6 +123,8 @@ bool SearchPage::isComplete() const
 
 void SearchPage::gotHost(Host *host)
 {
+    qDebug() << Q_FUNC_INFO << host;
+
 //    QMessageBox::information(NULL, Q_FUNC_INFO, tr("Nom: %1, IPv4: %2, Description: %3").arg(name, ipv4, description));
 
 
@@ -153,11 +165,15 @@ void SearchPage::gotHost(Host *host)
 
 void SearchPage::gotError(const QString &title, const QString &message)
 {
+    qDebug() << Q_FUNC_INFO << title << message;
+
     QMessageBox::warning(NULL, title, message, QMessageBox::Close);
 }
 
 void SearchPage::searchFinished()
 {
+    qDebug() << Q_FUNC_INFO << numberOfSearchWorkersRunning;
+
     numberOfSearchWorkersRunning--;
 
     if(numberOfSearchWorkersRunning<=0)
