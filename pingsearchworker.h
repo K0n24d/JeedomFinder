@@ -6,11 +6,10 @@
 
 #if defined(Q_OS_MAC) || defined(Q_OS_WIN)
 #include <QProcess>
+#include <QMutex>
 #else
 class QProcess;
 #endif
-
-#include <QNetworkAccessManager>
 
 class PingSearchWorker : public SearchWorker
 {
@@ -23,19 +22,17 @@ protected:
     bool stopping;
     QList<QProcess*> pingProcesses;
     QTimer *checkResultsTimer;
-    QNetworkAccessManager *manager;
     QList<QString> checkedMACs;
 #if defined(Q_OS_MAC) || defined(Q_OS_WIN)
     QProcess *arpTableProcess;
+    QMutex arpMutex;
 #endif
-    void checkWebPage(const Host *host, QString url);
 
 protected slots:
     void checkResults();
 #if defined(Q_OS_MAC) || defined(Q_OS_WIN)
     void gotArpResults(int);
 #endif
-    void replyFinished(QNetworkReply* reply);
 
 public slots:
     void discover();

@@ -24,7 +24,6 @@ QuickStartWizard::QuickStartWizard(QWidget *parent) :
     setProperty("hasAdminRights", false);
 #endif
 
-
     setWindowTitle(tr("Jeedom"));
     setWindowIcon(QIcon(":/images/icon"));
 

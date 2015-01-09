@@ -7,6 +7,7 @@
 #include <QProgressBar>
 #include <QTableWidget>
 #include <QProcess>
+#include <QList>
 #include "searchworker.h"
 #include "host.h"
 
@@ -26,7 +27,7 @@ private:
     QThread searchThread;
     QProgressBar progressBar;
     QTableWidget hostsTable;
-    int numberOfSearchWorkersRunning;
+    QList<QObject *> searchWorkers;
 
 protected:
     void resizeEvent(QResizeEvent *);

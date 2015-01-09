@@ -3,12 +3,17 @@
 
 #include "host.h"
 #include <QObject>
+#include <QMutex>
+
+class QNetworkReply;
+class QNetworkAccessManager;
 
 class SearchWorker : public QObject
 {
     Q_OBJECT
 public:
     explicit SearchWorker(QObject *parent = 0);
+    ~SearchWorker();
 
     /*
     struct Host {
@@ -19,6 +24,13 @@ public:
     };
     */
 
+protected:
+    void checkWebPage(const Host *host, QString url);
+    QNetworkAccessManager *manager;
+    bool allRequestsSent;
+    int webPagesToCheck;
+    QMutex webPagesToCheckMutex;
+
 signals:
     void finished();
     void error(const QString & title, const QString & message);
@@ -27,6 +39,9 @@ signals:
 public slots:
     virtual void discover(){};
     virtual void stop(){};
+
+protected slots:
+    void replyFinished(QNetworkReply* reply);
 };
 
 

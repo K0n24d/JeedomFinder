@@ -1,9 +1,9 @@
 #include "bonjoursearchworker.h"
-#include "bonjourservicebrowser.h"
 #include "bonjourserviceresolver.h"
 
 #include <QRegExp>
 #include <QtDebug>
+#include <QTimerEvent>
 
 BonjourSearchWorker::BonjourSearchWorker(const QString &searchServiceType, QObject *parent)
     : SearchWorker(parent), serviceType(searchServiceType)
@@ -15,6 +15,10 @@ BonjourSearchWorker::BonjourSearchWorker(const QString &searchServiceType, QObje
     connect(bonjourBrowser, SIGNAL(currentBonjourRecordsChanged(const QList<BonjourRecord> &)),
             this, SLOT(updateRecords(const QList<BonjourRecord> &)));
 
+    connect(bonjourBrowser, SIGNAL(error(DNSServiceErrorType)),
+            this, SLOT(bonjourError(DNSServiceErrorType)));
+
+
     qDebug() << Q_FUNC_INFO << "End";
 }
 
@@ -23,15 +27,39 @@ void BonjourSearchWorker::discover()
     qDebug() << Q_FUNC_INFO;
 
     bonjourBrowser->browseForServiceType(serviceType);
+    bonjourBrowseTimeout = startTimer(20000);
 }
 
 void BonjourSearchWorker::stop()
 {
 }
 
+void BonjourSearchWorker::bonjourError(DNSServiceErrorType err)
+{
+    qWarning() << Q_FUNC_INFO << err;
+    emit(finished());
+}
+
+void BonjourSearchWorker::timerEvent(QTimerEvent *event)
+{
+    qWarning() << Q_FUNC_INFO  << event->timerId();
+
+    if(event->timerId()==bonjourBrowseTimeout)
+    {
+        killTimer(bonjourBrowseTimeout);
+        emit(finished());
+    }
+}
+
 void BonjourSearchWorker::updateRecords(const QList<BonjourRecord> &list)
 {
     qDebug() << Q_FUNC_INFO;
+
+    if(list.isEmpty())
+    {
+        qWarning() << Q_FUNC_INFO << "Aucun enregistrement MDNS";
+        emit(finished());
+    }
 
     foreach (BonjourRecord record, list)
     {

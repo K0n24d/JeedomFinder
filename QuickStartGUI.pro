@@ -26,7 +26,8 @@ SOURCES += main.cpp\
     Bonjour/bonjourservicebrowser.cpp \
     bonjoursearchworker.cpp \
     searchworker.cpp \
-    host.cpp
+    host.cpp \
+    dnslookupsearchworker.cpp
 
 HEADERS  += \
     quickstartwizard.h \
@@ -40,7 +41,8 @@ HEADERS  += \
     Bonjour/bonjourrecord.h \
     bonjoursearchworker.h \
     searchworker.h \
-    host.h
+    host.h \
+    dnslookupsearchworker.h
 
 FORMS    +=
 

@@ -6,7 +6,7 @@
 #include <QHostInfo>
 #include <QMap>
 
-class BonjourServiceBrowser;
+#include "bonjourservicebrowser.h"
 class BonjourServiceResolver;
 
 class BonjourSearchWorker : public SearchWorker
@@ -24,10 +24,13 @@ protected:
     QString serviceType;
     BonjourServiceBrowser *bonjourBrowser;
     QMap<BonjourServiceResolver*, BonjourRecord> bonjourResolvers;
+    void timerEvent(QTimerEvent *event);
+    int bonjourBrowseTimeout;
 
 public slots:
     void discover();
     void stop();
+    void bonjourError(DNSServiceErrorType err);
 };
 
 #endif // BONJOURSEARCHWORKER_H

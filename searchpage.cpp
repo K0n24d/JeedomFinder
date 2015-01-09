@@ -1,6 +1,7 @@
 #include "searchpage.h"
 #include "pingsearchworker.h"
 #include "bonjoursearchworker.h"
+#include "dnslookupsearchworker.h"
 #include <QVariant>
 #include <QVBoxLayout>
 #include <QMessageBox>
@@ -16,7 +17,6 @@ SearchPage::SearchPage(QWidget *parent) :
 //    qRegisterMetaType<Host>("Host");
 
     progressBar.setTextVisible(false);
-    numberOfSearchWorkersRunning=0;
 
     setTitle(tr("Recherche et sélection du serveur Jeedom"));
 
@@ -28,6 +28,7 @@ SearchPage::SearchPage(QWidget *parent) :
     labels << tr("Nom") << tr("URL") << tr("Adresse IP") << tr("Description");
     hostsTable.setHorizontalHeaderLabels(labels);
     hostsTable.setDisabled(true);
+    connect(&hostsTable, SIGNAL(itemSelectionChanged()), this, SIGNAL(completeChanged()));
 
     QVBoxLayout *layout = new QVBoxLayout(this);
     layout->addWidget(&hostsTable);
@@ -55,7 +56,10 @@ void SearchPage::initializePage()
 
     setSubTitle(subTitle);
 
-    numberOfSearchWorkersRunning=0;
+    searchWorkers.empty();
+
+    if(field("dns").toBool())
+        addWorker(new DNSLookupSearchWorker);
 
     if(field("zeroconf").toBool())
     {
@@ -66,7 +70,7 @@ void SearchPage::initializePage()
     if(field("ping").toBool())
         addWorker(new PingSearchWorker);
 
-    if(numberOfSearchWorkersRunning>0)
+    if(!searchWorkers.isEmpty())
     {
         progressBar.setRange(0,0);
         progressBar.setVisible(true);
@@ -76,7 +80,6 @@ void SearchPage::initializePage()
         progressBar.setRange(0,100);
         progressBar.setVisible(false);
     }
-
 
     searchThread.start();
 }
@@ -93,7 +96,8 @@ void SearchPage::addWorker(SearchWorker *worker)
     connect(&searchThread, SIGNAL(finished()), worker, SLOT(deleteLater()));
     connect(&searchThread, SIGNAL(started()), worker, SLOT(discover()));
     connect(this, SIGNAL(cleaningUp()), worker, SLOT(stop()));
-    numberOfSearchWorkersRunning++;
+
+    searchWorkers << worker;
 }
 
 void SearchPage::resizeEvent(QResizeEvent *)
@@ -118,7 +122,7 @@ void SearchPage::cleanupPage()
 
 bool SearchPage::isComplete() const
 {
-    return false;
+    return !(hostsTable.selectedRanges().isEmpty());
 }
 
 void SearchPage::gotHost(Host *host)
@@ -172,13 +176,19 @@ void SearchPage::gotError(const QString &title, const QString &message)
 
 void SearchPage::searchFinished()
 {
-    qDebug() << Q_FUNC_INFO << numberOfSearchWorkersRunning;
+    bool workerConsideredRunning = searchWorkers.contains(sender());
+    qDebug() << Q_FUNC_INFO << searchWorkers.count() << workerConsideredRunning;
 
-    numberOfSearchWorkersRunning--;
+    if(!workerConsideredRunning)
+        return;
 
-    if(numberOfSearchWorkersRunning<=0)
+    searchWorkers.removeOne(sender());
+
+    if(searchWorkers.isEmpty())
     {
         progressBar.setRange(0,100);
         progressBar.setVisible(false);
+        if(hostsTable.rowCount()<=0)
+            QMessageBox::warning(this, tr("Jeedom"), tr("Aucun serveur Jeedom n'a pu être trouvé"), QMessageBox::Close, QMessageBox::Close);
     }
 }

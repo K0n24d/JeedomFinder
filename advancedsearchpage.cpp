@@ -25,6 +25,11 @@ AdvancedSearchPage::AdvancedSearchPage(QWidget *parent) :
     registerField("ping", ping);
     connect(ping, SIGNAL(stateChanged(int)), SIGNAL(completeChanged()));
 
+    QCheckBox *dns = new QCheckBox(tr("Recherche via DNS"));
+    dns->setChecked(true);
+    registerField("dns", dns);
+    connect(dns, SIGNAL(stateChanged(int)), SIGNAL(completeChanged()));
+
     arpscan = new QCheckBox(tr("Recherche via ARP Ping"));
     registerField("arpscan", arpscan);
     connect(arpscan, SIGNAL(stateChanged(int)), SIGNAL(completeChanged()));
@@ -60,11 +65,12 @@ void AdvancedSearchPage::initializePage()
 
 bool AdvancedSearchPage::isComplete() const
 {
-    if(!field("zeroconf").toBool()
-            && !field("ping").toBool()
-            && !field("arpscan").toBool()
+    if(field("zeroconf").toBool()
+            || field("ping").toBool()
+            || field("dns").toBool()
+            || field("arpscan").toBool()
             )
-        return false;
+        return true;
 
-    return true;
+    return false;
 }
