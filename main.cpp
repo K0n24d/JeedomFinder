@@ -34,11 +34,13 @@ void myMessageOutput(QtMsgType type, const QMessageLogContext &, const QString &
     {
         QString logFileName = "QuickStartGUI.log";
 
-        QDir logDir(QDir::temp());
+#ifdef Q_OS_MAC
+        QDir logDir(QDir::homePath().append("/Desktop"));
         if(logDir.exists())
         {
             logFileName = logDir.absoluteFilePath(logFileName);
         }
+#endif
 
         logFile.setFileName(logFileName);
         logFile.open(QIODevice::WriteOnly | QIODevice::Truncate | QIODevice::Text);
