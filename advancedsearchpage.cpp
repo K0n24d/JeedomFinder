@@ -37,6 +37,7 @@ AdvancedSearchPage::AdvancedSearchPage(QWidget *parent) :
     QVBoxLayout *modesRechercheLayout = new QVBoxLayout();
     modesRechercheLayout->addWidget(zeroconf);
     modesRechercheLayout->addWidget(ping);
+    modesRechercheLayout->addWidget(dns);
     modesRechercheLayout->addWidget(arpscan);
     modesRecherche->setLayout(modesRechercheLayout);
 
