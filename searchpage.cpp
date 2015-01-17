@@ -9,6 +9,7 @@
 #include <QLabel>
 #include <QHeaderView>
 #include <QtDebug>
+#include <QMutexLocker>
 
 SearchPage::SearchPage(QWidget *parent) :
     QWizardPage(parent), progressBar(this), hostsTable(this)
@@ -56,6 +57,14 @@ void SearchPage::initializePage()
 
     setSubTitle(subTitle);
 
+    hostsTable.clearContents();
+    hostsTable.setRowCount(0);
+    foreach(Host *host, hosts.values())
+    {
+        host->deleteLater();
+    }
+    hosts.clear();
+
     searchWorkers.empty();
 
     if(field("dns").toBool())
@@ -81,22 +90,25 @@ void SearchPage::initializePage()
         progressBar.setVisible(false);
     }
 
-    searchThread.start();
 }
 
 void SearchPage::addWorker(SearchWorker *worker)
 {
     qDebug() << Q_FUNC_INFO;
 
-    worker->moveToThread(&searchThread);
+    QThread *searchThread = new QThread(this);
+    worker->moveToThread(searchThread);
     connect(worker, SIGNAL(finished()), this, SLOT(searchFinished()));
     connect(worker, SIGNAL(error(QString,QString)), this, SLOT(gotError(QString,QString)));
 
     connect(worker, SIGNAL(host(Host*)), this, SLOT(gotHost(Host*)));
-    connect(&searchThread, SIGNAL(finished()), worker, SLOT(deleteLater()));
-    connect(&searchThread, SIGNAL(started()), worker, SLOT(discover()));
+    connect(searchThread, SIGNAL(finished()), worker, SLOT(deleteLater()));
+    connect(searchThread, SIGNAL(started()), worker, SLOT(discover()));
     connect(this, SIGNAL(cleaningUp()), worker, SLOT(stop()));
 
+    searchThread->start();
+
+    searchThreads << searchThread;
     searchWorkers << worker;
 }
 
@@ -117,7 +129,14 @@ void SearchPage::resizeEvent(QResizeEvent *)
 void SearchPage::cleanupPage()
 {
     emit(cleaningUp());
-    searchThread.quit();
+    foreach(Host *host, hosts.values())
+        host->deleteLater();
+    hosts.clear();
+    hostsTable.clearContents();
+
+    foreach(QThread * searchThread, searchThreads)
+        searchThread->quit();
+    searchThreads.clear();
 }
 
 bool SearchPage::isComplete() const
@@ -129,14 +148,17 @@ void SearchPage::gotHost(Host *host)
 {
     qDebug() << Q_FUNC_INFO << host;
 
+    QMutexLocker tableMutexLocker(&tableMutex);
+
 //    QMessageBox::information(NULL, Q_FUNC_INFO, tr("Nom: %1, IPv4: %2, Description: %3").arg(name, ipv4, description));
 
-
-    if(!hostsTable.findItems(host->url, Qt::MatchExactly).isEmpty())
+    if(hosts.contains(host->url))
     {
         host->deleteLater();
         return;
     }
+
+    hosts.insert(host->url, host);
 
     hostsTable.setEnabled(true);
 
@@ -163,8 +185,6 @@ void SearchPage::gotHost(Host *host)
     item->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
     item->setToolTip(host->desc);
     hostsTable.setItem(row, 2, item);
-
-    host->deleteLater();
 }
 
 void SearchPage::gotError(const QString &title, const QString &message)
@@ -188,6 +208,7 @@ void SearchPage::searchFinished()
     {
         progressBar.setRange(0,100);
         progressBar.setVisible(false);
+        setSubTitle(tr("Recherche terminée."));
         if(hostsTable.rowCount()<=0)
             QMessageBox::warning(this, tr("Jeedom"), tr("Aucun serveur Jeedom n'a pu être trouvé"), QMessageBox::Close, QMessageBox::Close);
     }

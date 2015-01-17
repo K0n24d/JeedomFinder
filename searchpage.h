@@ -8,6 +8,8 @@
 #include <QTableWidget>
 #include <QProcess>
 #include <QList>
+#include <QMutex>
+#include <QHash>
 #include "searchworker.h"
 #include "host.h"
 
@@ -24,13 +26,15 @@ public:
     bool isComplete() const;
 private:
     void addWorker(SearchWorker *worker);
-    QThread searchThread;
+    QList<QThread*> searchThreads;
     QProgressBar progressBar;
     QTableWidget hostsTable;
     QList<QObject *> searchWorkers;
+    QMutex tableMutex;
 
 protected:
     void resizeEvent(QResizeEvent *);
+    QHash<QString, Host*> hosts;
 
 signals:
     void cleaningUp();
