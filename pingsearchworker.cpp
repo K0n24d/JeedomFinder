@@ -307,7 +307,7 @@ void PingSearchWorker::checkResults()
                 QHostInfo hostInfo = QHostInfo::fromName(list.at(1));
 
                 Host thisHost;
-                thisHost.name = hostInfo.hostName();
+                thisHost.name = hostInfo.hostName().toLower();
                 thisHost.ip = list.at(1);
                 thisHost.desc = tr("MAC : %1").arg(mac);
 

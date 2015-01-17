@@ -91,7 +91,7 @@ void BonjourSearchWorker::recordResolved(const QHostInfo &hostInfo, int port, co
             path.prepend('/');
 
         Host *thisHost = new Host(this);
-        thisHost->name = hostInfo.hostName();
+        thisHost->name = hostInfo.hostName().toLower();
         while(thisHost->name.endsWith('.'))
             thisHost->name.chop(1);
         thisHost->ip = hostInfo.addresses().isEmpty()?QString():hostInfo.addresses().at(0).toString();
