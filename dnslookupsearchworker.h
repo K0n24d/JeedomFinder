@@ -11,6 +11,9 @@ public:
     DNSLookupSearchWorker(QObject *parent = NULL);
     ~DNSLookupSearchWorker();
 
+protected:
+    void lookup(const QString &hostname);
+
 public slots:
     void discover();
 };
