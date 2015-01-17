@@ -92,7 +92,7 @@ void PingSearchWorker::discover()
                 QHostAddress hostaddress(address);
 
 #ifdef Q_OS_MAC
-                while(pingProcesses.count()>40)
+                while(pingProcesses.count()>30)
 #else
                 while(pingProcesses.count()>50)
 #endif
