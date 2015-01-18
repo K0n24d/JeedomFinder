@@ -27,7 +27,8 @@ SOURCES += main.cpp\
     bonjoursearchworker.cpp \
     searchworker.cpp \
     host.cpp \
-    dnslookupsearchworker.cpp
+    dnslookupsearchworker.cpp \
+    udpsearchworker.cpp
 
 HEADERS  += \
     quickstartwizard.h \
@@ -42,7 +43,8 @@ HEADERS  += \
     bonjoursearchworker.h \
     searchworker.h \
     host.h \
-    dnslookupsearchworker.h
+    dnslookupsearchworker.h \
+    udpsearchworker.h
 
 FORMS    +=
 

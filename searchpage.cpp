@@ -1,4 +1,5 @@
 #include "searchpage.h"
+#include "udpsearchworker.h"
 #include "pingsearchworker.h"
 #include "bonjoursearchworker.h"
 #include "dnslookupsearchworker.h"
@@ -75,6 +76,9 @@ void SearchPage::initializePage()
         addWorker(new BonjourSearchWorker(QString("_https._tcp")));
         addWorker(new BonjourSearchWorker(QString("_http._tcp")));
     }
+
+    if(field("udp").toBool())
+        addWorker(new UdpSearchWorker);
 
     if(field("ping").toBool())
         addWorker(new PingSearchWorker);

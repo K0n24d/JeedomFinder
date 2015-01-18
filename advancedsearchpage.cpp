@@ -20,8 +20,13 @@ AdvancedSearchPage::AdvancedSearchPage(QWidget *parent) :
     registerField("zeroconf", zeroconf);
     connect(zeroconf, SIGNAL(stateChanged(int)), SIGNAL(completeChanged()));
 
+    QCheckBox *udp = new QCheckBox(tr("Recherche via Udp + ARP Cache"));
+    udp->setChecked(true);
+    registerField("udp", udp);
+    connect(udp, SIGNAL(stateChanged(int)), SIGNAL(completeChanged()));
+
     QCheckBox *ping = new QCheckBox(tr("Recherche via Ping + ARP Cache"));
-    ping->setChecked(true);
+    ping->setChecked(false);
     registerField("ping", ping);
     connect(ping, SIGNAL(stateChanged(int)), SIGNAL(completeChanged()));
 
@@ -36,6 +41,7 @@ AdvancedSearchPage::AdvancedSearchPage(QWidget *parent) :
 
     QVBoxLayout *modesRechercheLayout = new QVBoxLayout();
     modesRechercheLayout->addWidget(zeroconf);
+    modesRechercheLayout->addWidget(udp);
     modesRechercheLayout->addWidget(ping);
     modesRechercheLayout->addWidget(dns);
     modesRechercheLayout->addWidget(arpscan);
@@ -67,6 +73,7 @@ void AdvancedSearchPage::initializePage()
 bool AdvancedSearchPage::isComplete() const
 {
     if(field("zeroconf").toBool()
+            || field("udp").toBool()
             || field("ping").toBool()
             || field("dns").toBool()
             || field("arpscan").toBool()
