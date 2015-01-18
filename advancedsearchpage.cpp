@@ -20,7 +20,7 @@ AdvancedSearchPage::AdvancedSearchPage(QWidget *parent) :
     registerField("zeroconf", zeroconf);
     connect(zeroconf, SIGNAL(stateChanged(int)), SIGNAL(completeChanged()));
 
-    QCheckBox *udp = new QCheckBox(tr("Recherche via Udp + ARP Cache"));
+    QCheckBox *udp = new QCheckBox(tr("Recherche via UDP + ARP Cache"));
     udp->setChecked(true);
     registerField("udp", udp);
     connect(udp, SIGNAL(stateChanged(int)), SIGNAL(completeChanged()));
