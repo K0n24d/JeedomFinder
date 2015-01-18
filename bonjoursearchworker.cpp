@@ -95,7 +95,7 @@ void BonjourSearchWorker::recordResolved(const QHostInfo &hostInfo, int port, co
         while(thisHost->name.endsWith('.'))
             thisHost->name.chop(1);
         thisHost->ip = hostInfo.addresses().isEmpty()?QString():hostInfo.addresses().at(0).toString();
-        thisHost->desc = tr("Name: %1, Type: %2, Domain: %3, Port: %4").arg(record.serviceName).arg(record.registeredType).arg(record.replyDomain).arg(port);
+        thisHost->desc = tr("Zeroconf (Name: %1, Type: %2, Domain: %3, Port: %4)").arg(record.serviceName).arg(record.registeredType).arg(record.replyDomain).arg(port);
         if(serviceType.startsWith("_https"))
         {
             if(port==443)

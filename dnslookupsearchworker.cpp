@@ -45,7 +45,7 @@ void DNSLookupSearchWorker::lookup(const QString &hostname)
         else
             thisHost.name = reverseLookup.hostName().toLower();
         thisHost.ip = address.toString();
-        thisHost.desc = tr("Recherche DNS");
+        thisHost.desc = tr("Recherche DNS (%1)").arg(hostname);
 
         QString urlHostName(thisHost.name);
         if(multipleIPs)

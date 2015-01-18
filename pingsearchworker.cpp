@@ -249,7 +249,7 @@ void PingSearchWorker::gotArpResults(int)
             Host thisHost;
             thisHost.name = hostInfo.hostName();
             thisHost.ip = list.at(1);
-            thisHost.desc = tr("MAC : %1").arg(mac);
+            thisHost.desc = tr("Ping + ARP cache (MAC : %1)").arg(mac);
 
             checkWebPage(&thisHost,QString("https://%1/").arg(thisHost.name));
             checkWebPage(&thisHost,QString("https://%1/jeedom/").arg(thisHost.name));
@@ -309,7 +309,7 @@ void PingSearchWorker::checkResults()
                 Host thisHost;
                 thisHost.name = hostInfo.hostName().toLower();
                 thisHost.ip = list.at(1);
-                thisHost.desc = tr("MAC : %1").arg(mac);
+                thisHost.desc = tr("Ping + ARP cache (MAC : %1)").arg(mac);
 
                 checkWebPage(&thisHost,QString("https://%1/").arg(thisHost.name));
                 checkWebPage(&thisHost,QString("https://%1/jeedom/").arg(thisHost.name));
