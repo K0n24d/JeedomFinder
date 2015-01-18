@@ -2,6 +2,7 @@
 #define HOST_H
 
 #include <QObject>
+class QTableWidgetItem;
 
 class Host : public QObject
 {
@@ -14,6 +15,7 @@ public:
     QString ip;
     QString desc;
     QString url;
+    QTableWidgetItem * tableItem;
 
 signals:
 

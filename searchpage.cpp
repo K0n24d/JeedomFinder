@@ -158,6 +158,18 @@ void SearchPage::gotHost(Host *host)
 
     if(hosts.contains(host->url))
     {
+        Host *oldHost=hosts[host->url];
+        oldHost->desc.append("\n");
+        oldHost->desc.append(host->desc);
+        if(oldHost->tableItem)
+        {
+            int row = oldHost->tableItem->row();
+            hostsTable.item(row, 0)->setToolTip(oldHost->desc);
+            hostsTable.item(row, 1)->setToolTip(oldHost->desc);
+            hostsTable.cellWidget(row, 1)->setToolTip(oldHost->desc);
+            hostsTable.item(row, 2)->setToolTip(oldHost->desc);
+        }
+
         host->deleteLater();
         return;
     }
@@ -173,6 +185,7 @@ void SearchPage::gotHost(Host *host)
     item->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
     item->setToolTip(host->desc);
     hostsTable.setItem(row, 0, item);
+    host->tableItem = item;
 
     QLabel *label = new QLabel(QString("<html><body><a href=\"%1\">%2</a></body></html>").arg(host->url, host->url));
     label->setOpenExternalLinks(true);
