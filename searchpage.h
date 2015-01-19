@@ -29,12 +29,14 @@ private:
     QList<QThread*> searchThreads;
     QProgressBar progressBar;
     QTableWidget hostsTable;
-    QList<QObject *> searchWorkers;
+    QList<SearchWorker*> searchWorkers;
     QMutex tableMutex;
+    QMutex searchWorkersMutex;
 
 protected:
     void resizeEvent(QResizeEvent *);
     QHash<QString, Host*> hosts;
+    bool isCleaningUp;
 
 signals:
     void cleaningUp();

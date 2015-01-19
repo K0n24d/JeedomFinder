@@ -11,6 +11,8 @@
 #include <QHeaderView>
 #include <QtDebug>
 #include <QMutexLocker>
+#include <QCoreApplication>
+
 
 SearchPage::SearchPage(QWidget *parent) :
     QWizardPage(parent), progressBar(this), hostsTable(this)
@@ -45,6 +47,8 @@ void SearchPage::initializePage()
 {
     qDebug() << Q_FUNC_INFO;
 
+    isCleaningUp=false;
+
     QString subTitle;
 
     if(!field("advancedSearch").toBool())
@@ -66,7 +70,10 @@ void SearchPage::initializePage()
     }
     hosts.clear();
 
-    searchWorkers.empty();
+    {
+        QMutexLocker locker(&searchWorkersMutex);
+        searchWorkers.empty();
+    }
 
     if(field("dns").toBool())
         addWorker(new DNSLookupSearchWorker);
@@ -98,6 +105,8 @@ void SearchPage::initializePage()
 
 void SearchPage::addWorker(SearchWorker *worker)
 {
+    QMutexLocker locker(&searchWorkersMutex);
+
     qDebug() << Q_FUNC_INFO;
 
     QThread *searchThread = new QThread(this);
@@ -108,6 +117,7 @@ void SearchPage::addWorker(SearchWorker *worker)
     connect(worker, SIGNAL(host(Host*)), this, SLOT(gotHost(Host*)));
     connect(searchThread, SIGNAL(finished()), worker, SLOT(deleteLater()));
     connect(searchThread, SIGNAL(started()), worker, SLOT(discover()));
+//    connect(this, SIGNAL(cleaningUp()), worker, SLOT(stop()), Qt::DirectConnection);
     connect(this, SIGNAL(cleaningUp()), worker, SLOT(stop()));
 
     searchThread->start();
@@ -132,14 +142,29 @@ void SearchPage::resizeEvent(QResizeEvent *)
 
 void SearchPage::cleanupPage()
 {
+    isCleaningUp=true;
     emit(cleaningUp());
+
     foreach(Host *host, hosts.values())
         host->deleteLater();
     hosts.clear();
     hostsTable.clearContents();
 
     foreach(QThread * searchThread, searchThreads)
-        searchThread->quit();
+        searchThread->requestInterruption();
+
+    while(!searchThreads.isEmpty())
+    {
+        foreach(QThread * searchThread, searchThreads)
+            if(searchThread->isFinished())
+                searchThreads.removeAll(searchThread);
+
+        foreach(SearchWorker * searchWorker, searchWorkers)
+            qDebug() << searchWorker->metaObject()->className();
+
+        QCoreApplication::processEvents(QEventLoop::AllEvents, 200);
+    }
+
     searchThreads.clear();
 }
 
@@ -150,7 +175,7 @@ bool SearchPage::isComplete() const
 
 void SearchPage::gotHost(Host *host)
 {
-    qDebug() << Q_FUNC_INFO << host;
+    qDebug() << Q_FUNC_INFO << host->name << host->url;
 
     QMutexLocker tableMutexLocker(&tableMutex);
 
@@ -213,13 +238,19 @@ void SearchPage::gotError(const QString &title, const QString &message)
 
 void SearchPage::searchFinished()
 {
-    bool workerConsideredRunning = searchWorkers.contains(sender());
+    QMutexLocker locker(&searchWorkersMutex);
+    SearchWorker* sendingWorker = qobject_cast<SearchWorker*>(sender());
+    bool workerConsideredRunning = searchWorkers.contains(sendingWorker);
     qDebug() << Q_FUNC_INFO << searchWorkers.count() << workerConsideredRunning;
 
     if(!workerConsideredRunning)
         return;
 
-    searchWorkers.removeOne(sender());
+    searchWorkers.removeOne(sendingWorker);
+    sendingWorker->deleteLater();
+
+    if(isCleaningUp)
+        return;
 
     if(searchWorkers.isEmpty())
     {
@@ -228,5 +259,10 @@ void SearchPage::searchFinished()
         setSubTitle(tr("Recherche terminée."));
         if(hostsTable.rowCount()<=0)
             QMessageBox::warning(this, tr("Jeedom"), tr("Aucun serveur Jeedom n'a pu être trouvé"), QMessageBox::Close, QMessageBox::Close);
+    }
+    else
+    {
+        foreach(SearchWorker * searchWorker, searchWorkers)
+            qDebug() << Q_FUNC_INFO << searchWorker->metaObject()->className() << "en cours";
     }
 }
