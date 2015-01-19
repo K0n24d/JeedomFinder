@@ -29,7 +29,6 @@ protected:
 
 public slots:
     void discover();
-    void stop();
     void bonjourError(DNSServiceErrorType err);
 };
 

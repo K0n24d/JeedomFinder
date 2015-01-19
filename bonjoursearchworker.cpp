@@ -30,10 +30,6 @@ void BonjourSearchWorker::discover()
     bonjourBrowseTimeout = startTimer(20000);
 }
 
-void BonjourSearchWorker::stop()
-{
-}
-
 void BonjourSearchWorker::bonjourError(DNSServiceErrorType err)
 {
     qWarning() << Q_FUNC_INFO << err;
