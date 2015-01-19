@@ -30,6 +30,7 @@ void DNSLookupSearchWorker::lookedUp(QHostInfo hostInfo)
 
     foreach(QHostAddress address, hostInfo.addresses())
     {
+        qDebug() << Q_FUNC_INFO << "Tenter un reverse lookup pour" << address.toString();
         lookupIDs.insert(QHostInfo::lookupHost(address.toString(), this, SLOT(reverseLookedUp(QHostInfo))), hostInfo);
     }
 
