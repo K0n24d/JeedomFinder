@@ -9,12 +9,12 @@
 #include <QNetworkReply>
 #include <QtDebug>
 #if defined(Q_OS_WIN) || defined(Q_OS_MAC)
+#include <QProcess>
 #include <QMutexLocker>
 #endif
 
-
 PingSearchWorker::PingSearchWorker(QObject *parent) :
-    SearchWorker(parent), stopping(false)
+    SearchWorker(parent)
 {
     qDebug() << Q_FUNC_INFO;
 
@@ -65,6 +65,10 @@ void PingSearchWorker::discover()
 
     foreach(QNetworkInterface interface, QNetworkInterface::allInterfaces())
     {
+        QCoreApplication::processEvents(QEventLoop::AllEvents, 100);
+        if(stopping)
+            return;
+
         if(   !interface.flags().testFlag(QNetworkInterface::IsUp)
            || interface.flags().testFlag(QNetworkInterface::IsLoopBack)
            || interface.flags().testFlag(QNetworkInterface::IsPointToPoint)
@@ -76,6 +80,9 @@ void PingSearchWorker::discover()
 
         foreach(QNetworkAddressEntry addressEntry, interface.addressEntries())
         {
+            QCoreApplication::processEvents(QEventLoop::AllEvents, 100);
+            if(stopping)
+                return;
             if(addressEntry.ip().protocol()!=QAbstractSocket::IPv4Protocol)
             {
                 qDebug() << Q_FUNC_INFO << "Skipping address" << addressEntry.ip().toString();
@@ -86,9 +93,16 @@ void PingSearchWorker::discover()
             quint32 netmask = addressEntry.netmask().toIPv4Address();
             quint32 network = myaddress & netmask;
             quint32 address = network + 1;
+            quint32 broadcast = addressEntry.broadcast().toIPv4Address();
 
             while((address & netmask) == network)
             {
+                if(stopping)
+                    return;
+    
+                if(address == broadcast)
+                    break;
+
                 QHostAddress hostaddress(address);
 
 #ifdef Q_OS_MAC
@@ -99,9 +113,6 @@ void PingSearchWorker::discover()
                 {
                     foreach(QProcess *process, pingProcesses)
                     {
-                        if(stopping)
-                            return;
-
                         if(process->state()==QProcess::NotRunning)
                         {
                             qDebug() << Q_FUNC_INFO << "Ping finished" << QString::fromLocal8Bit(process->readAll());
@@ -110,7 +121,10 @@ void PingSearchWorker::discover()
                             process->deleteLater();
                         }
                     }
+
                     QCoreApplication::processEvents(QEventLoop::AllEvents, 200);
+                    if(stopping)
+                        return;
                 }
 
                 qDebug() << Q_FUNC_INFO << "Sending ping from" << addressEntry.ip().toString() << "to" << hostaddress.toString();
@@ -139,8 +153,6 @@ void PingSearchWorker::discover()
     {
         foreach(QProcess *process, pingProcesses)
         {
-            if(stopping)
-                return;
 
             if(process->state()==QProcess::NotRunning)
             {
@@ -150,7 +162,10 @@ void PingSearchWorker::discover()
                 process->deleteLater();
             }
         }
+
         QCoreApplication::processEvents(QEventLoop::AllEvents, 200);
+        if(stopping)
+            return;
     }
 
     qDebug() << Q_FUNC_INFO << "Fin emission des requetes ping";
@@ -169,13 +184,19 @@ void PingSearchWorker::stop()
         arpTableProcess->kill();
 #endif
 
-    stopping = true;
+    foreach(int id, lookupIDs.keys())
+        QHostInfo::abortHostLookup(id);
+
+    SearchWorker::stop();
 }
 
 #if defined(Q_OS_WIN) || defined(Q_OS_MAC)
 void PingSearchWorker::checkResults()
 {
     qDebug() << Q_FUNC_INFO;
+
+    if(stopping)
+        return;
 
     QMutexLocker locker(&arpMutex);
 
@@ -202,6 +223,9 @@ void PingSearchWorker::checkResults()
 void PingSearchWorker::gotArpResults(int)
 {
     qDebug() << Q_FUNC_INFO;
+
+    if(stopping)
+        return;
 
     QMutexLocker locker(&arpMutex);
 
@@ -240,28 +264,14 @@ void PingSearchWorker::gotArpResults(int)
         if(checkedMACs.contains(mac))
             continue;
 
-//        if(mac.startsWith("B8:27:EB"))
-        {
-            qDebug() << Q_FUNC_INFO << "Trying to find jeedom website on" << list.at(1);
-            checkedMACs << mac;
-            QHostInfo hostInfo = QHostInfo::fromName(list.at(1));
+        checkedMACs << mac;
 
-            Host thisHost;
-            thisHost.name = hostInfo.hostName();
-            thisHost.ip = list.at(1);
-            thisHost.desc = tr("Ping + ARP cache (MAC : %1)").arg(mac);
-
-            checkWebPage(&thisHost,QString("https://%1/").arg(thisHost.name));
-            checkWebPage(&thisHost,QString("https://%1/jeedom/").arg(thisHost.name));
-            checkWebPage(&thisHost,QString("http://%1/").arg(thisHost.name));
-            checkWebPage(&thisHost,QString("http://%1/jeedom/").arg(thisHost.name));
-        }
+        allRequestsSent=false;
+        lookupIDs.insert(QHostInfo::lookupHost(list.at(1), this, SLOT(lookedUp(QHostInfo))), mac);
     }
 
-    if(webPagesToCheck<=0 && allRequestsSent)
-    {
+    if(webPagesToCheck<=0 && lookupIDs.isEmpty())
         emit(finished());
-    }
     else if(!stopping)
         checkResultsTimer->start();
 }
@@ -271,6 +281,9 @@ void PingSearchWorker::gotArpResults(int)
 void PingSearchWorker::checkResults()
 {
     qDebug() << Q_FUNC_INFO;
+
+    if(stopping)
+        return;
 
     QFile arpTable("/proc/net/arp");
 
@@ -300,32 +313,44 @@ void PingSearchWorker::checkResults()
             if(checkedMACs.contains(mac))
                 continue;
 
-//            if(mac.startsWith("B8:27:EB"))
-            {
-                qDebug() << Q_FUNC_INFO << "Trying to find jeedom website on" << list.at(1);
-                checkedMACs << mac;
-                QHostInfo hostInfo = QHostInfo::fromName(list.at(1));
+            checkedMACs << mac;
 
-                Host thisHost;
-                thisHost.name = hostInfo.hostName().toLower();
-                thisHost.ip = list.at(1);
-                thisHost.desc = tr("Ping + ARP cache (MAC : %1)").arg(mac);
-
-                checkWebPage(&thisHost,QString("https://%1/").arg(thisHost.name));
-                checkWebPage(&thisHost,QString("https://%1/jeedom/").arg(thisHost.name));
-                checkWebPage(&thisHost,QString("http://%1/").arg(thisHost.name));
-                checkWebPage(&thisHost,QString("http://%1/jeedom/").arg(thisHost.name));
-            }
+            allRequestsSent=false;
+            lookupIDs.insert(QHostInfo::lookupHost(list.at(1), this, SLOT(lookedUp(QHostInfo))), mac);
         }
     }
     else
         emit(error(Q_FUNC_INFO, tr("Impossible d'ouvrir /proc/net/arp: %1").arg(arpTable.errorString())));
 
-    if(webPagesToCheck<=0 && allRequestsSent)
-    {
-        emit(finished());
-    }
+    if(webPagesToCheck<=0 && lookupIDs.isEmpty())
+       emit(finished());
     else if(!stopping)
         checkResultsTimer->start();
 }
 #endif
+
+void PingSearchWorker::lookedUp(QHostInfo hostInfo)
+{
+    Host thisHost;
+    thisHost.name = hostInfo.hostName().toLower();
+    thisHost.ip = hostInfo.addresses().at(0).toString();
+    thisHost.desc = tr("UDP + ARP cache (MAC : %1)").arg(lookupIDs.value(hostInfo.lookupId()));
+    lookupIDs.remove(hostInfo.lookupId());
+
+    qDebug() << Q_FUNC_INFO << "Trying to find jeedom website on" << thisHost.name << "(" << thisHost.ip << ")";
+
+    if(stopping)
+        return;
+
+    checkWebPage(&thisHost,QString("https://%1/").arg(thisHost.name));
+    checkWebPage(&thisHost,QString("https://%1/jeedom/").arg(thisHost.name));
+    checkWebPage(&thisHost,QString("http://%1/").arg(thisHost.name));
+    checkWebPage(&thisHost,QString("http://%1/jeedom/").arg(thisHost.name));
+
+    if(lookupIDs.isEmpty())
+    {
+        allRequestsSent=true;
+        if(webPagesToCheck<=0)
+            emit(finished());
+    }
+}

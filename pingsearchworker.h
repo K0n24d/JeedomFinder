@@ -3,6 +3,7 @@
 
 #include "searchworker.h"
 #include <QTimer>
+#include <QHostInfo>
 
 #if defined(Q_OS_MAC) || defined(Q_OS_WIN)
 #include <QProcess>
@@ -19,7 +20,6 @@ public:
     ~PingSearchWorker();
 
 protected:
-    bool stopping;
     QList<QProcess*> pingProcesses;
     QTimer *checkResultsTimer;
     QList<QString> checkedMACs;
@@ -27,12 +27,14 @@ protected:
     QProcess *arpTableProcess;
     QMutex arpMutex;
 #endif
+    QHash<int, QString> lookupIDs;
 
 protected slots:
     void checkResults();
 #if defined(Q_OS_MAC) || defined(Q_OS_WIN)
     void gotArpResults(int);
 #endif
+    void lookedUp(QHostInfo hostInfo);
 
 public slots:
     void discover();
