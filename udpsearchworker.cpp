@@ -11,6 +11,8 @@
 #include <QProcess>
 #include <QMutexLocker>
 #endif
+#include <QStringList>
+#include <QRegExp>
 
 UdpSearchWorker::UdpSearchWorker(QObject *parent) :
     SearchWorker(parent)
