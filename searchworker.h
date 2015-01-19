@@ -4,6 +4,7 @@
 #include "host.h"
 #include <QObject>
 #include <QMutex>
+#include <QTimer>
 
 class QNetworkReply;
 class QNetworkAccessManager;
@@ -30,6 +31,10 @@ protected:
     bool allRequestsSent;
     int webPagesToCheck;
     QMutex webPagesToCheckMutex;
+    QMutex checkWebPageMutex;
+    QMutex replyFinishedMutex;
+    bool stopping;
+    QTimer checkWebPageTimer;
 
 signals:
     void finished();
@@ -38,10 +43,11 @@ signals:
 
 public slots:
     virtual void discover(){};
-    virtual void stop(){};
+    virtual void stop();
 
 protected slots:
     void replyFinished(QNetworkReply* reply);
+    void checkWebPageTimeout();
 };
 
 

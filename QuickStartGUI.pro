@@ -106,3 +106,7 @@ win32:RC_FILE += \
 
 QMAKE_MAC_SDK = macosx10.9
 DEFINES *= QT_USE_QSTRINGBUILDER
+
+contains(QT_CONFIG, openssl) | contains(QT_CONFIG, openssl-linked) {
+  DEFINES *= HAS_SSL_SUPPORT
+}
