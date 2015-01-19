@@ -4,6 +4,7 @@
 #include <QNetworkReply>
 #include <QMutexLocker>
 #include <QThread>
+#include <QSslConfiguration>
 
 SearchWorker::SearchWorker(QObject *parent) :
     QObject(parent), allRequestsSent(false), webPagesToCheck(0), checkWebPageTimer(this)
