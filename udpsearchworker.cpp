@@ -326,8 +326,10 @@ void UdpSearchWorker::lookedUp(QHostInfo hostInfo)
     if(stopping)
         return;
 
+#ifdef HAS_SSL_SUPPORT
     checkWebPage(&thisHost,QString("https://%1/").arg(thisHost.name));
     checkWebPage(&thisHost,QString("https://%1/jeedom/").arg(thisHost.name));
+#endif
     checkWebPage(&thisHost,QString("http://%1/").arg(thisHost.name));
     checkWebPage(&thisHost,QString("http://%1/jeedom/").arg(thisHost.name));
 

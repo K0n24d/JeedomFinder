@@ -70,8 +70,10 @@ void DNSLookupSearchWorker::reverseLookedUp(QHostInfo reverseLookup)
         qDebug() << "Adresses ip multiples";
     }
 
+#ifdef HAS_SSL_SUPPORT
     checkWebPage(&thisHost,QString("https://%1/").arg(urlHostName));
     checkWebPage(&thisHost,QString("https://%1/jeedom/").arg(urlHostName));
+#endif
     checkWebPage(&thisHost,QString("http://%1/").arg(urlHostName));
     checkWebPage(&thisHost,QString("http://%1/jeedom/").arg(urlHostName));
 
