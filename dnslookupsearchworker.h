@@ -2,6 +2,7 @@
 #define DNSLOOKUPSEARCHWORKER_H
 
 #include "searchworker.h"
+#include <QHostInfo>
 
 class DNSLookupSearchWorker : public SearchWorker
 {
@@ -12,10 +13,15 @@ public:
     ~DNSLookupSearchWorker();
 
 protected:
-    void lookup(const QString &hostname);
+    QHash<int, QHostInfo> lookupIDs;
+
+protected slots:
+    void lookedUp(QHostInfo hostInfo);
+    void reverseLookedUp(QHostInfo hostInfo);
 
 public slots:
     void discover();
+    void stop();
 };
 
 #endif // DNSLOOKUPSEARCHWORKER_H

@@ -18,42 +18,77 @@ void DNSLookupSearchWorker::discover()
 
     allRequestsSent = false;
 
-    lookup("jeedom.local");
-    lookup("jeedom");
-
-    allRequestsSent=true;
-
-    if(webPagesToCheck<=0)
-    {
-        emit(finished());
-    }
-
-    qDebug() << Q_FUNC_INFO;
+    lookupIDs.insert(QHostInfo::lookupHost("jeedom.local", this, SLOT(lookedUp(QHostInfo))), QHostInfo());
+    lookupIDs.insert(QHostInfo::lookupHost("jeedom", this, SLOT(lookedUp(QHostInfo))), QHostInfo());
 }
 
-void DNSLookupSearchWorker::lookup(const QString &hostname)
+void DNSLookupSearchWorker::lookedUp(QHostInfo hostInfo)
 {
-    QHostInfo hostInfo = QHostInfo::fromName(hostname);
+    qDebug() << Q_FUNC_INFO << hostInfo.hostName().toLower();
 
-    bool multipleIPs = hostInfo.addresses().count()>1;
+    lookupIDs.remove(hostInfo.lookupId());
+
     foreach(QHostAddress address, hostInfo.addresses())
     {
-        Host thisHost;
-        QHostInfo reverseLookup = QHostInfo::fromName(address.toString());
-        if(reverseLookup.hostName() == address.toString())
-            thisHost.name = hostInfo.hostName().toLower();
-        else
-            thisHost.name = reverseLookup.hostName().toLower();
-        thisHost.ip = address.toString();
-        thisHost.desc = tr("Recherche DNS (%1)").arg(hostname);
-
-        QString urlHostName(thisHost.name);
-        if(multipleIPs)
-            urlHostName = thisHost.ip;
-
-        checkWebPage(&thisHost,QString("https://%1/").arg(urlHostName));
-        checkWebPage(&thisHost,QString("https://%1/jeedom/").arg(urlHostName));
-        checkWebPage(&thisHost,QString("http://%1/").arg(urlHostName));
-        checkWebPage(&thisHost,QString("http://%1/jeedom/").arg(urlHostName));
+        lookupIDs.insert(QHostInfo::lookupHost(address.toString(), this, SLOT(reverseLookedUp(QHostInfo))), hostInfo);
     }
+
+    if(lookupIDs.isEmpty())
+    {
+        allRequestsSent=true;
+        if(webPagesToCheck<=0)
+            emit(finished());
+    }
+}
+
+void DNSLookupSearchWorker::reverseLookedUp(QHostInfo reverseLookup)
+{
+    QHostInfo hostInfo = lookupIDs.value(reverseLookup.lookupId());
+    lookupIDs.remove(reverseLookup.lookupId());
+
+    bool multipleIPs = hostInfo.addresses().count()>1;
+    Host thisHost;
+    qDebug() << Q_FUNC_INFO << hostInfo.hostName().toLower() << reverseLookup.hostName();
+
+    if(reverseLookup.hostName() == reverseLookup.addresses().at(0).toString())
+    {
+        thisHost.name = hostInfo.hostName().toLower();
+        qDebug() << Q_FUNC_INFO << "Utilisation du nom d'hôte d'origine" << thisHost.name;
+    }
+    else
+    {
+        thisHost.name = reverseLookup.hostName().toLower();
+        qDebug() << Q_FUNC_INFO << "Utilisation du reverse" << thisHost.name;
+    }
+    thisHost.ip = reverseLookup.addresses().at(0).toString();
+    thisHost.desc = tr("Recherche DNS (%1)").arg(hostInfo.hostName());
+
+    QString urlHostName(thisHost.name);
+    if(multipleIPs)
+    {
+        urlHostName = thisHost.ip;
+        qDebug() << "Adresses ip multiples";
+    }
+
+    checkWebPage(&thisHost,QString("https://%1/").arg(urlHostName));
+    checkWebPage(&thisHost,QString("https://%1/jeedom/").arg(urlHostName));
+    checkWebPage(&thisHost,QString("http://%1/").arg(urlHostName));
+    checkWebPage(&thisHost,QString("http://%1/jeedom/").arg(urlHostName));
+
+    if(lookupIDs.isEmpty())
+    {
+        allRequestsSent=true;
+        if(webPagesToCheck<=0)
+            emit(finished());
+    }
+}
+
+void DNSLookupSearchWorker::stop()
+{
+    qDebug() << Q_FUNC_INFO;
+
+    foreach(int id, lookupIDs.keys())
+        QHostInfo::abortHostLookup(id);
+
+    SearchWorker::stop();
 }
