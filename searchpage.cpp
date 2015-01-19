@@ -150,9 +150,6 @@ void SearchPage::cleanupPage()
     hosts.clear();
     hostsTable.clearContents();
 
-    foreach(QThread * searchThread, searchThreads)
-        searchThread->requestInterruption();
-
     while(!searchThreads.isEmpty())
     {
         foreach(QThread * searchThread, searchThreads)
