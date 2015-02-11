@@ -13,11 +13,13 @@
 class QProcess;
 #endif
 
+class QWizard;
+
 class UdpSearchWorker : public SearchWorker
 {
     Q_OBJECT
 public:
-    explicit UdpSearchWorker(QObject *parent = 0);
+    explicit UdpSearchWorker(QWizard *pWizard, QObject *parent = 0);
     ~UdpSearchWorker();
 
 protected:
@@ -29,6 +31,7 @@ protected:
     QMutex arpMutex;
 #endif
     QHash<int, QString> lookupIDs;
+    QWizard *wizard;
 
 protected slots:
     void checkResults();

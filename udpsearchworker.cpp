@@ -13,8 +13,9 @@
 #endif
 #include <QStringList>
 #include <QRegExp>
+#include <QWizard>
 
-UdpSearchWorker::UdpSearchWorker(QObject *parent) :
+UdpSearchWorker::UdpSearchWorker(QWizard * pWizard, QObject *parent) :
     SearchWorker(parent)
 {
     qDebug() << Q_FUNC_INFO;
@@ -24,6 +25,8 @@ UdpSearchWorker::UdpSearchWorker(QObject *parent) :
     arpTableProcess=NULL;
 #endif
     manager=NULL;
+
+    wizard=pWizard;
 }
 
 UdpSearchWorker::~UdpSearchWorker()
@@ -55,8 +58,13 @@ void UdpSearchWorker::discover()
         checkResultsTimer->stop();
         checkResultsTimer->deleteLater();
     }
+    checkResultsTimer = new QTimer(this);
+    checkResultsTimer->setInterval(1000);
+    checkResultsTimer->setSingleShot(true);
+    connect(checkResultsTimer, SIGNAL(timeout()), this, SLOT(checkResults()));
+    checkResultsTimer->start();
 
-    while(sockets.count()<10)
+    while(sockets.count()<3)
     {
         QUdpSocket *socket = new QUdpSocket(this);
         socket->bind();
@@ -68,7 +76,7 @@ void UdpSearchWorker::discover()
 
     foreach(QNetworkInterface interface, QNetworkInterface::allInterfaces())
     {
-        QCoreApplication::processEvents(QEventLoop::AllEvents, 100);
+        QCoreApplication::processEvents(QEventLoop::AllEvents, 500);
         if(stopping)
             return;
 
@@ -83,13 +91,19 @@ void UdpSearchWorker::discover()
 
         foreach(QNetworkAddressEntry addressEntry, interface.addressEntries())
         {
-            QCoreApplication::processEvents(QEventLoop::AllEvents, 100);
+            QCoreApplication::processEvents(QEventLoop::AllEvents, 500);
             if(stopping)
                 return;
 
             if(addressEntry.ip().protocol()!=QAbstractSocket::IPv4Protocol)
             {
                 qDebug() << Q_FUNC_INFO << "Skipping address" << addressEntry.ip().toString();
+                continue;
+            }
+
+            if(!wizard->field(addressEntry.ip().toString()).toBool())
+            {
+                qDebug() << Q_FUNC_INFO << "Recherche désactivée pour l'addresse :" << addressEntry.ip().toString();
                 continue;
             }
 
@@ -101,7 +115,7 @@ void UdpSearchWorker::discover()
 
             while((address & netmask) == network)
             {
-                QCoreApplication::processEvents(QEventLoop::AllEvents, 100);
+                QCoreApplication::processEvents(QEventLoop::AllEvents, 500);
                 if(stopping)
                     return;
     
@@ -130,7 +144,7 @@ void UdpSearchWorker::discover()
                             index=0;
                         socket=sockets[index];
 
-                        QCoreApplication::processEvents(QEventLoop::AllEvents, 100);
+                        QCoreApplication::processEvents(QEventLoop::AllEvents, 500);
                         if(stopping)
                             return;
                     }
@@ -141,13 +155,9 @@ void UdpSearchWorker::discover()
         }
     }
 
-    qDebug() << Q_FUNC_INFO << "Fin emission des paquets udp";
+    allRequestsSent=true;
 
-    checkResultsTimer = new QTimer(this);
-    checkResultsTimer->setInterval(1000);
-    checkResultsTimer->setSingleShot(true);
-    connect(checkResultsTimer, SIGNAL(timeout()), this, SLOT(checkResults()));
-    checkResultsTimer->start();
+    qDebug() << Q_FUNC_INFO << "Fin emission des paquets udp";
 }
 
 void UdpSearchWorker::stop()
@@ -252,12 +262,11 @@ void UdpSearchWorker::gotArpResults(int)
 
         checkedMACs << mac;
 
-        allRequestsSent=false;
         lookupIDs.insert(QHostInfo::lookupHost(list.at(1), this, SLOT(lookedUp(QHostInfo))), mac);
     }
 
-    if(webPagesToCheck<=0 && lookupIDs.isEmpty())
-        emit(finished());
+    if(allRequestsSent && webPagesToCheck<=0 && lookupIDs.isEmpty())
+       emit(finished());
     else if(!stopping)
         checkResultsTimer->start();
 }
@@ -301,14 +310,13 @@ void UdpSearchWorker::checkResults()
 
             checkedMACs << mac;
 
-            allRequestsSent=false;
             lookupIDs.insert(QHostInfo::lookupHost(list.at(1), this, SLOT(lookedUp(QHostInfo))), mac);
         }
     }
     else
         emit(error(Q_FUNC_INFO, tr("Impossible d'ouvrir /proc/net/arp: %1").arg(arpTable.errorString())));
 
-    if(webPagesToCheck<=0 && lookupIDs.isEmpty())
+    if(allRequestsSent && webPagesToCheck<=0 && lookupIDs.isEmpty())
        emit(finished());
     else if(!stopping)
         checkResultsTimer->start();
@@ -335,10 +343,6 @@ void UdpSearchWorker::lookedUp(QHostInfo hostInfo)
     checkWebPage(&thisHost,QString("http://%1/").arg(thisHost.name));
     checkWebPage(&thisHost,QString("http://%1/jeedom/").arg(thisHost.name));
 
-    if(lookupIDs.isEmpty())
-    {
-        allRequestsSent=true;
-        if(webPagesToCheck<=0)
-            emit(finished());
-    }
+    if(allRequestsSent && webPagesToCheck<=0 && lookupIDs.isEmpty())
+       emit(finished());
 }

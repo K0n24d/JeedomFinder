@@ -41,7 +41,7 @@ protected:
 signals:
     void cleaningUp();
 public slots:
-    void gotHost(Host *host);
+    void gotHost(Host *newHost);
     void gotError(const QString &title, const QString &message);
     void searchFinished();
 };

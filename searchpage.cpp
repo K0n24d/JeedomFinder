@@ -85,7 +85,7 @@ void SearchPage::initializePage()
     }
 
     if(field("udp").toBool())
-        addWorker(new UdpSearchWorker);
+        addWorker(new UdpSearchWorker(wizard()));
 
     if(field("ping").toBool())
         addWorker(new PingSearchWorker);
@@ -117,13 +117,14 @@ void SearchPage::addWorker(SearchWorker *worker)
     connect(worker, SIGNAL(host(Host*)), this, SLOT(gotHost(Host*)));
     connect(searchThread, SIGNAL(finished()), worker, SLOT(deleteLater()));
     connect(searchThread, SIGNAL(started()), worker, SLOT(discover()));
-//    connect(this, SIGNAL(cleaningUp()), worker, SLOT(stop()), Qt::DirectConnection);
     connect(this, SIGNAL(cleaningUp()), worker, SLOT(stop()));
-
-    searchThread->start();
 
     searchThreads << searchThread;
     searchWorkers << worker;
+
+    searchThread->start();
+
+    QCoreApplication::processEvents(QEventLoop::AllEvents, 500);
 }
 
 void SearchPage::resizeEvent(QResizeEvent *)
@@ -146,7 +147,8 @@ void SearchPage::cleanupPage()
     emit(cleaningUp());
 
     foreach(Host *host, hosts.values())
-        host->deleteLater();
+        delete host;
+
     hosts.clear();
     hostsTable.clearContents();
 
@@ -170,9 +172,11 @@ bool SearchPage::isComplete() const
     return !(hostsTable.selectedRanges().isEmpty());
 }
 
-void SearchPage::gotHost(Host *host)
+void SearchPage::gotHost(Host *newHost)
 {
-    qDebug() << Q_FUNC_INFO << host->name << host->url;
+    qDebug() << Q_FUNC_INFO << newHost->name << newHost->url;
+    Host *host = new Host(newHost, this);
+    delete newHost;
 
     QMutexLocker tableMutexLocker(&tableMutex);
 

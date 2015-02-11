@@ -2,6 +2,7 @@
 #define ADVANCEDSEARCHPAGE_H
 
 #include <QWizardPage>
+#include <QList>
 
 class QCheckBox;
 
@@ -15,11 +16,14 @@ public:
     void initializePage();
 protected:
     QCheckBox *arpscan;
+    QCheckBox *udp;
+    QList<QCheckBox *> ipCheckBoxes;
 
 signals:
 
 public slots:
-
+    void ipAddressesChanged();
+    void udpChanged();
 };
 
 #endif // ADVANCEDSEARCHPAGE_H

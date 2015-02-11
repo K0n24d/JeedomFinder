@@ -45,11 +45,11 @@ void DNSLookupSearchWorker::lookedUp(QHostInfo hostInfo)
 void DNSLookupSearchWorker::reverseLookedUp(QHostInfo reverseLookup)
 {
     QHostInfo hostInfo = lookupIDs.value(reverseLookup.lookupId());
-    lookupIDs.remove(reverseLookup.lookupId());
+
+    qDebug() << Q_FUNC_INFO << hostInfo.hostName().toLower() << reverseLookup.hostName();
 
     bool multipleIPs = hostInfo.addresses().count()>1;
     Host thisHost;
-    qDebug() << Q_FUNC_INFO << hostInfo.hostName().toLower() << reverseLookup.hostName();
 
     if(reverseLookup.hostName() == reverseLookup.addresses().at(0).toString())
     {
@@ -78,6 +78,7 @@ void DNSLookupSearchWorker::reverseLookedUp(QHostInfo reverseLookup)
     checkWebPage(&thisHost,QString("http://%1/").arg(urlHostName));
     checkWebPage(&thisHost,QString("http://%1/jeedom/").arg(urlHostName));
 
+    lookupIDs.remove(reverseLookup.lookupId());
     if(lookupIDs.isEmpty())
     {
         allRequestsSent=true;

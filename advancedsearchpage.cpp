@@ -4,6 +4,8 @@
 #include <QVBoxLayout>
 #include <QVariant>
 #include <QtDebug>
+#include <QNetworkInterface>
+#include <QNetworkAddressEntry>
 
 AdvancedSearchPage::AdvancedSearchPage(QWidget *parent) :
     QWizardPage(parent)
@@ -20,10 +22,35 @@ AdvancedSearchPage::AdvancedSearchPage(QWidget *parent) :
     registerField("zeroconf", zeroconf);
     connect(zeroconf, SIGNAL(stateChanged(int)), SIGNAL(completeChanged()));
 
-    QCheckBox *udp = new QCheckBox(tr("Recherche via UDP + ARP Cache"));
+    udp = new QCheckBox(tr("Recherche via UDP + ARP Cache"));
     udp->setChecked(true);
     registerField("udp", udp);
     connect(udp, SIGNAL(stateChanged(int)), SIGNAL(completeChanged()));
+    connect(udp, SIGNAL(stateChanged(int)), SLOT(udpChanged()));
+
+    QGroupBox *optionsRecherche = new QGroupBox(tr("Réseaux pour la recherche UDP + ARP Cache :"));
+    QVBoxLayout *optionsRechercheLayout = new QVBoxLayout();
+    optionsRecherche->setLayout(optionsRechercheLayout);
+    foreach(QNetworkInterface interface, QNetworkInterface::allInterfaces())
+    {
+        if(   !interface.flags().testFlag(QNetworkInterface::IsUp)
+           || interface.flags().testFlag(QNetworkInterface::IsLoopBack)
+           || interface.flags().testFlag(QNetworkInterface::IsPointToPoint)
+              )
+            continue;
+
+        foreach(QNetworkAddressEntry addressEntry, interface.addressEntries())
+        {
+            if(addressEntry.ip().protocol()!=QAbstractSocket::IPv4Protocol)
+                continue;
+            QCheckBox *ip = new QCheckBox(tr("Sur le réseau : %1/%2").arg(addressEntry.ip().toString(), addressEntry.netmask().toString()));
+            ip->setChecked(true);
+            ipCheckBoxes << ip;
+            registerField(addressEntry.ip().toString(), ip);
+            optionsRechercheLayout->addWidget(ip);
+            connect(ip, SIGNAL(clicked()), SLOT(ipAddressesChanged()));
+        }
+    }
 
     QCheckBox *ping = new QCheckBox(tr("Recherche via Ping + ARP Cache"));
     ping->setChecked(false);
@@ -47,10 +74,18 @@ AdvancedSearchPage::AdvancedSearchPage(QWidget *parent) :
     modesRechercheLayout->addWidget(arpscan);
     modesRecherche->setLayout(modesRechercheLayout);
 
-    QVBoxLayout *layout = new QVBoxLayout;
-    layout->addWidget(modesRecherche);
-    layout->addStretch(1);
-    setLayout(layout);
+    QVBoxLayout *vglayout = new QVBoxLayout;
+    vglayout->addWidget(modesRecherche);
+    vglayout->addStretch(1);
+
+    QVBoxLayout *vdlayout = new QVBoxLayout;
+    vdlayout->addWidget(optionsRecherche);
+    vdlayout->addStretch(1);
+
+    QHBoxLayout *hlayout = new QHBoxLayout;
+    hlayout->addLayout(vglayout);
+    hlayout->addLayout(vdlayout);
+    setLayout(hlayout);
 
     qDebug() << Q_FUNC_INFO << "End";
 }
@@ -68,6 +103,27 @@ void AdvancedSearchPage::initializePage()
         arpscan->setChecked(true);
 
     qDebug() << Q_FUNC_INFO << "End";
+}
+
+void AdvancedSearchPage::ipAddressesChanged()
+{
+    foreach(QCheckBox *checkBox, ipCheckBoxes)
+    {
+        if(checkBox->isChecked())
+        {
+            udp->setChecked(true);
+            return;
+        }
+    }
+    udp->setChecked(false);
+}
+
+void AdvancedSearchPage::udpChanged()
+{
+    foreach(QCheckBox *checkBox, ipCheckBoxes)
+    {
+        checkBox->setChecked(udp->isChecked());
+    }
 }
 
 bool AdvancedSearchPage::isComplete() const
