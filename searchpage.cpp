@@ -22,8 +22,6 @@ SearchPage::SearchPage(QWidget *parent) :
 
     progressBar.setTextVisible(false);
 
-    setTitle(tr("Recherche et sélection du serveur Jeedom"));
-
     hostsTable.setColumnCount(3);
     hostsTable.setRowCount(0);
     hostsTable.setSelectionBehavior(QAbstractItemView::SelectRows);
@@ -49,18 +47,19 @@ void SearchPage::initializePage()
 
     isCleaningUp=false;
 
-    QString subTitle;
+    QString title;
 
     if(!field("advancedSearch").toBool())
     {
-        subTitle=tr("Recherche automatique en cours...");
+        title=tr("Recherche automatique en cours...");
     }
     else
     {
-        subTitle=tr("Recherche avancée en cours...");
+        title=tr("Recherche avancée en cours...");
     }
 
-    setSubTitle(subTitle);
+    setTitle(title);
+    setSubTitle(tr("Les box Jeedom apparaîtront au fur et à mesure lors de la recherche."));
 
     hostsTable.clearContents();
     hostsTable.setRowCount(0);
@@ -257,9 +256,18 @@ void SearchPage::searchFinished()
     {
         progressBar.setRange(0,100);
         progressBar.setVisible(false);
-        setSubTitle(tr("Recherche terminée."));
+        setTitle(tr("Recherche terminée."));
         if(hostsTable.rowCount()<=0)
-            QMessageBox::warning(this, tr("Jeedom"), tr("Aucun serveur Jeedom n'a pu être trouvé"), QMessageBox::Close, QMessageBox::Close);
+        {
+            setSubTitle(tr("Aucune box Jeedom n'a pu être trouvée. Veuillez vérifier que celles-ci sont bien allumées "
+                           "et connectées au même réseau que votre ordinateur."
+                           ));
+            QMessageBox::warning(this, tr("Jeedom Finder"), tr("Aucun serveur Jeedom n'a pu être trouvé"), QMessageBox::Close, QMessageBox::Close);
+        }
+        else
+            setSubTitle(tr("Il est préférable de mémoriser sur votre navigateur "
+                           "l'adresse d'accès à votre box Jeedom, pour les prochaines connexions."
+                           ));
     }
     else
     {

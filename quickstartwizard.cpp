@@ -2,7 +2,6 @@
 #include "intropage.h"
 #include "advancedsearchpage.h"
 #include "searchpage.h"
-#include "conclusionpage.h"
 #include <QVariant>
 #include <QIcon>
 #include <QtDebug>
@@ -24,7 +23,7 @@ QuickStartWizard::QuickStartWizard(QWidget *parent) :
     setProperty("hasAdminRights", false);
 #endif
 
-    setWindowTitle(tr("Jeedom"));
+    setWindowTitle(tr("Jeedom Finder"));
     setWindowIcon(QIcon(":/images/icon"));
 
     setWizardStyle(QWizard::ModernStyle);
@@ -32,7 +31,6 @@ QuickStartWizard::QuickStartWizard(QWidget *parent) :
     setPage(Page_Intro, new IntroPage(this));
     setPage(Page_AdvancedSearch, new AdvancedSearchPage(this));
     setPage(Page_Search, new SearchPage(this));
-    setPage(Page_Conclusion, new ConclusionPage(this));
 
     setPixmap(QWizard::LogoPixmap, QPixmap(":/images/logo"));
 
@@ -51,8 +49,6 @@ int QuickStartWizard::nextId() const
     case Page_AdvancedSearch:
         return Page_Search;
     case Page_Search:
-        return Page_Conclusion;
-    case Page_Conclusion:
     default:
         return -1;
     }

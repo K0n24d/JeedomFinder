@@ -32,7 +32,7 @@ void myMessageOutput(QtMsgType type, const QMessageLogContext &, const QString &
 
     if(!logFile.isOpen())
     {
-        QString logFileName = "QuickStartGUI.log";
+        QString logFileName = "JeedomFinder.log";
 
 #ifdef Q_OS_MAC
         QDir logDir(QDir::homePath().append("/Desktop"));
@@ -63,7 +63,7 @@ void myMessageOutput(QtMsgType type, const QMessageLogContext &, const QString &
         break;
     }
 
-    QString fullmsg = QString("%1 %4 QuickStartGUI[%2]: %3\n")
+    QString fullmsg = QString("%1 %4 JeedomFinder[%2]: %3\n")
                         .arg(QDateTime::currentDateTime().toString("MMM dd hh:mm:ss.zzz"))
                         .arg((unsigned long)QThread::currentThreadId())
                         .arg(msg)
@@ -92,11 +92,16 @@ int main(int argc, char *argv[])
 
 
 #ifndef QT_NO_TRANSLATION
-    QString translatorFileName = QLatin1String("qt_");
-    translatorFileName += QLocale::system().name();
     QTranslator *translator = new QTranslator(&app);
-    if (translator->load(translatorFileName, QLibraryInfo::location(QLibraryInfo::TranslationsPath)))
+    if(translator->load(QLocale::system(), QLatin1String("qt"), QLatin1String("_"), ":translations/", QLatin1String(".qm")))
         app.installTranslator(translator);
+    else
+    {
+        QString translatorFileName = QLatin1String("qt_");
+        translatorFileName += QLocale::system().name();
+        if (translator->load(translatorFileName, QLibraryInfo::location(QLibraryInfo::TranslationsPath)))
+            app.installTranslator(translator);
+    }
 #endif
 
     QuickStartWizard wizard;

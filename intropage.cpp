@@ -9,16 +9,15 @@ IntroPage::IntroPage(QWidget *parent) :
 {
     qDebug() << Q_FUNC_INFO << "Start";
 
-    setTitle(tr("Démarrage rapide Jeedom"));
+    setTitle(tr("Logiciel de découverte réseau de box Jeedom"));
     QPixmap watermark(":images/panel");
     setPixmap(QWizard::WatermarkPixmap, watermark);
 
     QLabel *label = new QLabel(tr(
-        "JEEDOM est un projet domotique qui a pour but de connecter sa maison, "
-        "ses appareils électroniques, ses projets domotiques, tous ensembles."
-        "\n\nA distance, en local, par la voix, les sms, ou encore le tactile, "
-        "vous pouvez piloter votre maison à tout instant et être alerté d'un événement."
-        "\n\nCet utilitaire vous guiderez dans le démarrage avec votre serveur Jeedom"));
+        "Ce logiciel va vous permettre d'accéder facilement à votre box domotique "
+        "Jeedom qui est connectée sur votre réseau local."
+        "\n\nVotre ordinateur doit être sur le même réseau que votre box Jeedom."
+        ));
 
 //    label->setMaximumWidth(watermark.width()*1.5);
     label->setWordWrap(true);
@@ -35,6 +34,8 @@ IntroPage::IntroPage(QWidget *parent) :
     layout->addWidget(advancedSearch);
     layout->addStretch(1);
     setLayout(layout);
+
+    setButtonText(QWizard::NextButton, tr("Lancer la &recherche"));
 
     qDebug() << Q_FUNC_INFO << "End";
 }

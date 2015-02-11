@@ -20,7 +20,6 @@ SOURCES += main.cpp\
     intropage.cpp \
     searchpage.cpp \
     advancedsearchpage.cpp \
-    conclusionpage.cpp \
     pingsearchworker.cpp \
     Bonjour/bonjourserviceresolver.cpp \
     Bonjour/bonjourservicebrowser.cpp \
@@ -35,7 +34,6 @@ HEADERS  += \
     intropage.h \
     searchpage.h \
     advancedsearchpage.h \
-    conclusionpage.h \
     pingsearchworker.h \
     Bonjour/bonjourserviceresolver.h \
     Bonjour/bonjourservicebrowser.h \

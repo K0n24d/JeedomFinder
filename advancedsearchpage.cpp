@@ -13,7 +13,7 @@ AdvancedSearchPage::AdvancedSearchPage(QWidget *parent) :
     qDebug() << Q_FUNC_INFO << "Start";
 
     setTitle(tr("Sélection des modes de recherche"));
-    setSubTitle(tr("Veuillez sélectionner ci-dessous les options utilisées lors de la recherche"));
+    setSubTitle(tr("Veuillez sélectionner ci-dessous les options à utiliser lors de la recherche"));
 
     QGroupBox *modesRecherche = new QGroupBox(tr("Modes de recherche :"));
 
