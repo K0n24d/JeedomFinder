@@ -10,7 +10,7 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 CONFIG += static
 
-TARGET = QuickStartGUI
+TARGET = JeedomFinder
 TEMPLATE = app
 
 INCLUDEPATH += Bonjour
@@ -98,7 +98,7 @@ linux-g++* {
 
 CONFIG(release, debug|release) {
   linux-g++*:QMAKE_POST_LINK=strip $(TARGET) && upx -k --ultra-brute $(TARGET)
-  mac*:QMAKE_POST_LINK=macdeployqt QuickStartGUI.app $(TARGET) -dmg
+  mac*:QMAKE_POST_LINK=macdeployqt JeedomFinder.app $(TARGET) -dmg
 }
 
 win32:RC_FILE += \
