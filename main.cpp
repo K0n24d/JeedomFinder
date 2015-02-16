@@ -103,7 +103,11 @@ int main(int argc, char *argv[])
             app.installTranslator(translator);
     }
 #endif
-
+/*
+    QTranslator *jeedomFinderTranslator = new QTranslator(&app);
+    if(jeedomFinderTranslator->load(QLocale::system(), QLatin1String("JeedomFinder"), QLatin1String("_"), ":translations/", QLatin1String(".qm")))
+        app.installTranslator(jeedomFinderTranslator);
+*/
     QuickStartWizard wizard;
     wizard.show();
 

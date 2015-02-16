@@ -1,0 +1,247 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2" xmlns:trolltech="urn:trolltech:names:ts:document:1.0">
+  <file original="../advancedsearchpage.cpp" datatype="cpp" source-language="en" target-language="fr-FR"><body>
+    <group restype="x-trolltech-linguist-context" resname="AdvancedSearchPage">
+      <trans-unit id="_msg1" approved="yes">
+        <source xml:space="preserve">Search mode setup</source>
+        <target xml:space="preserve">Sélection des modes de recherche</target>
+        <context-group purpose="location"><context context-type="linenumber">15</context></context-group>
+      </trans-unit>
+      <trans-unit id="_msg2" approved="yes">
+        <source xml:space="preserve">Please select the options to be applied during the search</source>
+        <target xml:space="preserve">Veuillez sélectionner ci-dessous les options à utiliser lors de la recherche</target>
+        <context-group purpose="location"><context context-type="linenumber">16</context></context-group>
+      </trans-unit>
+      <trans-unit id="_msg3" approved="yes">
+        <source xml:space="preserve">Search modes :</source>
+        <target xml:space="preserve">Modes de recherche :</target>
+        <context-group purpose="location"><context context-type="linenumber">18</context></context-group>
+      </trans-unit>
+      <trans-unit id="_msg4" approved="yes">
+        <source xml:space="preserve">Search using Zeroconf</source>
+        <target xml:space="preserve">Recherche via Zeroconf</target>
+        <context-group purpose="location"><context context-type="linenumber">20</context></context-group>
+      </trans-unit>
+      <trans-unit id="_msg5" approved="yes">
+        <source xml:space="preserve">Search using UDP + ARP Cache</source>
+        <target xml:space="preserve">Recherche via UDP + ARP Cache</target>
+        <context-group purpose="location"><context context-type="linenumber">25</context></context-group>
+      </trans-unit>
+      <trans-unit id="_msg6" approved="yes">
+        <source xml:space="preserve">Networks to be scanned with UDP + ARP Cache :</source>
+        <target xml:space="preserve">Réseaux pour la recherche UDP + ARP Cache :</target>
+        <context-group purpose="location"><context context-type="linenumber">31</context></context-group>
+      </trans-unit>
+      <trans-unit id="_msg7" approved="yes">
+        <source xml:space="preserve">Network : %1/%2</source>
+        <target xml:space="preserve">Sur le réseau : %1/%2</target>
+        <context-group purpose="location"><context context-type="linenumber">46</context></context-group>
+      </trans-unit>
+      <trans-unit id="_msg8" approved="yes">
+        <source xml:space="preserve">Search using Ping + ARP Cache</source>
+        <target xml:space="preserve">Recherche via Ping + ARP Cache</target>
+        <context-group purpose="location"><context context-type="linenumber">55</context></context-group>
+      </trans-unit>
+      <trans-unit id="_msg9" approved="yes">
+        <source xml:space="preserve">Search using DNS</source>
+        <target xml:space="preserve">Recherche via DNS</target>
+        <context-group purpose="location"><context context-type="linenumber">60</context></context-group>
+      </trans-unit>
+      <trans-unit id="_msg10" approved="yes">
+        <source xml:space="preserve">Search using ARP Ping</source>
+        <target xml:space="preserve">Recherche via ARP Ping</target>
+        <context-group purpose="location"><context context-type="linenumber">65</context></context-group>
+      </trans-unit>
+    </group>
+  </body></file>
+  <file original="../bonjoursearchworker.cpp" datatype="cpp" source-language="en" target-language="fr-FR"><body>
+    <group restype="x-trolltech-linguist-context" resname="BonjourSearchWorker">
+      <trans-unit id="_msg11" approved="yes">
+        <source xml:space="preserve">Zeroconf (Name: %1, Type: %2, Domain: %3, Port: %4)</source>
+        <target xml:space="preserve">Zeroconf (Nom: %1, Type: %2, Domaine: %3, Port: %4)</target>
+        <context-group purpose="location"><context context-type="linenumber">96</context></context-group>
+      </trans-unit>
+    </group>
+  </body></file>
+  <file original="../dnslookupsearchworker.cpp" datatype="cpp" source-language="en" target-language="fr-FR"><body>
+    <group restype="x-trolltech-linguist-context" resname="DNSLookupSearchWorker">
+      <trans-unit id="_msg12" approved="yes">
+        <source xml:space="preserve">DNS Search (%1)</source>
+        <target xml:space="preserve">Recherche DNS (%1)</target>
+        <context-group purpose="location"><context context-type="linenumber">65</context></context-group>
+      </trans-unit>
+    </group>
+  </body></file>
+  <file original="../intropage.cpp" datatype="cpp" source-language="en" target-language="fr-FR"><body>
+    <group restype="x-trolltech-linguist-context" resname="IntroPage">
+      <trans-unit id="_msg13" approved="yes">
+        <source xml:space="preserve">Network discovery tool for Jeedom boxes</source>
+        <target xml:space="preserve">Logiciel de découverte réseau de box Jeedom</target>
+        <context-group purpose="location"><context context-type="linenumber">12</context></context-group>
+      </trans-unit>
+      <trans-unit id="_msg14" approved="yes">
+        <source xml:space="preserve">This software will allow you to easily access your Jeedom boxes connected to your local network.
+
+Your computer has to be on the same network than your Jeedom boxes.</source>
+        <target xml:space="preserve">Ce logiciel va vous permettre d&apos;accéder facilement à votre box domotique Jeedom qui est connectée sur votre réseau local.
+
+Votre ordinateur doit être sur le même réseau que votre box Jeedom.</target>
+        <context-group purpose="location"><context context-type="linenumber">16</context></context-group>
+      </trans-unit>
+      <trans-unit id="_msg15" approved="yes">
+        <source xml:space="preserve">Use &amp;automatic search</source>
+        <target xml:space="preserve">Utiliser la recherche &amp;automatique</target>
+        <context-group purpose="location"><context context-type="linenumber">25</context></context-group>
+      </trans-unit>
+      <trans-unit id="_msg16" approved="yes">
+        <source xml:space="preserve">Use ad&amp;vanced search options</source>
+        <target xml:space="preserve">Utiliser la recherche a&amp;vancée</target>
+        <context-group purpose="location"><context context-type="linenumber">27</context></context-group>
+      </trans-unit>
+      <trans-unit id="_msg17" approved="yes">
+        <source xml:space="preserve">Sea&amp;rch</source>
+        <target xml:space="preserve">Lancer la &amp;recherche</target>
+        <context-group purpose="location"><context context-type="linenumber">38</context></context-group>
+      </trans-unit>
+    </group>
+  </body></file>
+  <file original="../pingsearchworker.cpp" datatype="cpp" source-language="en" target-language="fr-FR"><body>
+    <group restype="x-trolltech-linguist-context" resname="PingSearchWorker">
+      <trans-unit id="_msg18" approved="yes">
+        <source xml:space="preserve">Could not start ping :
+%1</source>
+        <target xml:space="preserve">Impossible de lancer ping :
+%1</target>
+        <context-group purpose="location"><context context-type="linenumber">143</context></context-group>
+      </trans-unit>
+      <trans-unit id="_msg19" approved="yes">
+        <source xml:space="preserve">Could not run arp tool.
+%1</source>
+        <target xml:space="preserve">Impossible de lancer l&apos;utilitaire arp.
+%1</target>
+        <context-group purpose="location"><context context-type="linenumber">220</context></context-group>
+      </trans-unit>
+      <trans-unit id="_msg20" approved="yes">
+        <source xml:space="preserve">Could not open /proc/net/arp: %1</source>
+        <target xml:space="preserve">Impossible d&apos;ouvrir /proc/net/arp: %1</target>
+        <context-group purpose="location"><context context-type="linenumber">323</context></context-group>
+      </trans-unit>
+      <trans-unit id="_msg21" approved="yes">
+        <source xml:space="preserve">UDP + ARP cache (MAC : %1)</source>
+        <target xml:space="preserve">UDP + ARP cache (MAC : %1)</target>
+        <context-group purpose="location"><context context-type="linenumber">337</context></context-group>
+      </trans-unit>
+    </group>
+  </body></file>
+  <file original="../quickstartwizard.cpp" datatype="cpp" source-language="en" target-language="fr-FR"><body>
+    <group restype="x-trolltech-linguist-context" resname="QuickStartWizard">
+      <trans-unit id="_msg22" approved="yes">
+        <source xml:space="preserve">Jeedom Finder</source>
+        <target xml:space="preserve">Jeedom Finder</target>
+        <context-group purpose="location"><context context-type="linenumber">26</context></context-group>
+      </trans-unit>
+    </group>
+  </body></file>
+  <file original="../searchpage.cpp" datatype="cpp" source-language="en" target-language="fr-FR"><body>
+    <group restype="x-trolltech-linguist-context" resname="SearchPage">
+      <trans-unit id="_msg23" approved="yes">
+        <source xml:space="preserve">URL</source>
+        <target xml:space="preserve">URL</target>
+        <context-group purpose="location"><context context-type="linenumber">30</context></context-group>
+      </trans-unit>
+      <trans-unit id="_msg24" approved="yes">
+        <source xml:space="preserve">Name</source>
+        <target xml:space="preserve">Nom</target>
+        <context-group purpose="location"><context context-type="linenumber">30</context></context-group>
+      </trans-unit>
+      <trans-unit id="_msg25" approved="yes">
+        <source xml:space="preserve">IP Address</source>
+        <target xml:space="preserve">Adresse IP</target>
+        <context-group purpose="location"><context context-type="linenumber">30</context></context-group>
+      </trans-unit>
+      <trans-unit id="_msg26" approved="yes">
+        <source xml:space="preserve">Automatique search...</source>
+        <target xml:space="preserve">Recherche automatique en cours...</target>
+        <context-group purpose="location"><context context-type="linenumber">54</context></context-group>
+      </trans-unit>
+      <trans-unit id="_msg27" approved="yes">
+        <source xml:space="preserve">Advanced search...</source>
+        <target xml:space="preserve">Recherche avancée en cours...</target>
+        <context-group purpose="location"><context context-type="linenumber">58</context></context-group>
+      </trans-unit>
+      <trans-unit id="_msg28" approved="yes">
+        <source xml:space="preserve">Jeedom boxes will appear as they&apos;re found during the search.</source>
+        <target xml:space="preserve">Les box Jeedom apparaîtront au fur et à mesure lors de la recherche.</target>
+        <context-group purpose="location"><context context-type="linenumber">62</context></context-group>
+      </trans-unit>
+      <trans-unit id="_msg29" approved="yes">
+        <source xml:space="preserve">No Jeedom box could be found. Please make sure they&apos;re powered on and connected to the same network than your computer.</source>
+        <target xml:space="preserve">Aucune box Jeedom n&apos;a pu être trouvée. Veuillez vérifier que celles-ci sont bien allumées et connectées au même réseau que votre ordinateur.</target>
+        <context-group purpose="location"><context context-type="linenumber">262</context></context-group>
+      </trans-unit>
+      <trans-unit id="_msg30" approved="yes">
+        <source xml:space="preserve">No Jeedom box could be found.</source>
+        <target xml:space="preserve">Aucune box Jeedom n&apos;a pu être trouvée.</target>
+        <context-group purpose="location"><context context-type="linenumber">265</context></context-group>
+      </trans-unit>
+      <trans-unit id="_msg31" approved="yes">
+        <source xml:space="preserve">It is recommended to save the access URL to your Jeedom box on your computer for futur use.</source>
+        <target xml:space="preserve">l est préférable de mémoriser sur votre navigateur l&apos;adresse d&apos;accès à votre box Jeedom, pour les prochaines connexions.</target>
+        <context-group purpose="location"><context context-type="linenumber">268</context></context-group>
+      </trans-unit>
+      <trans-unit id="_msg32" approved="yes">
+        <source xml:space="preserve">Description</source>
+        <target xml:space="preserve">Description</target>
+        <context-group purpose="location"><context context-type="linenumber">30</context></context-group>
+      </trans-unit>
+      <trans-unit id="_msg33" approved="yes">
+        <source xml:space="preserve">Search finished.</source>
+        <target xml:space="preserve">Recherche terminée.</target>
+        <context-group purpose="location"><context context-type="linenumber">259</context></context-group>
+      </trans-unit>
+      <trans-unit id="_msg34" approved="yes">
+        <source xml:space="preserve">Jeedom Finder</source>
+        <target xml:space="preserve">Jeedom Finder</target>
+        <context-group purpose="location"><context context-type="linenumber">265</context></context-group>
+      </trans-unit>
+    </group>
+  </body></file>
+  <file original="" datatype="plaintext" source-language="en" target-language="fr-FR"><body>
+    <group restype="x-trolltech-linguist-context" resname="SearchPage">
+      <trans-unit id="_msg35" translate="no" approved="yes">
+        <source xml:space="preserve">Finished searching.</source>
+        <target xml:space="preserve">Recherche terminée.</target>
+      </trans-unit>
+    </group>
+  </body></file>
+  <file original="../searchworker.cpp" datatype="cpp" source-language="en" target-language="fr-FR"><body>
+    <group restype="x-trolltech-linguist-context" resname="SearchWorker">
+      <trans-unit id="_msg36" approved="yes">
+        <source xml:space="preserve"> Redirection : %1</source>
+        <target xml:space="preserve"> Redirection : %1</target>
+        <context-group purpose="location"><context context-type="linenumber">105</context></context-group>
+      </trans-unit>
+    </group>
+  </body></file>
+  <file original="../udpsearchworker.cpp" datatype="cpp" source-language="en" target-language="fr-FR"><body>
+    <group restype="x-trolltech-linguist-context" resname="UdpSearchWorker">
+      <trans-unit id="_msg37" approved="yes">
+        <source xml:space="preserve">Could not run arp tool.
+%1</source>
+        <target xml:space="preserve">Impossible de lancer l&apos;utilitaire arp.
+%1</target>
+        <context-group purpose="location"><context context-type="linenumber">216</context></context-group>
+      </trans-unit>
+      <trans-unit id="_msg38" approved="yes">
+        <source xml:space="preserve">Could not open /proc/net/arp: %1</source>
+        <target xml:space="preserve">Impossible d&apos;ouvrir /proc/net/arp: %1</target>
+        <context-group purpose="location"><context context-type="linenumber">317</context></context-group>
+      </trans-unit>
+      <trans-unit id="_msg39" approved="yes">
+        <source xml:space="preserve">UDP + ARP cache (MAC : %1)</source>
+        <target xml:space="preserve">UDP + ARP cache (MAC : %1)</target>
+        <context-group purpose="location"><context context-type="linenumber">331</context></context-group>
+      </trans-unit>
+    </group>
+  </body></file>
+</xliff>

@@ -213,7 +213,7 @@ void UdpSearchWorker::checkResults()
     arpTableProcess->start("arp", QStringList("-a"));
 
     if(!arpTableProcess->waitForStarted())
-        emit(error(Q_FUNC_INFO, tr("Impossible de lancer l'utilitaire arp.\n%1").arg(arpTableProcess->errorString())));
+        emit(error(Q_FUNC_INFO, tr("Could not run arp tool.\n%1").arg(arpTableProcess->errorString())));
 }
 
 void UdpSearchWorker::gotArpResults(int)
@@ -314,7 +314,7 @@ void UdpSearchWorker::checkResults()
         }
     }
     else
-        emit(error(Q_FUNC_INFO, tr("Impossible d'ouvrir /proc/net/arp: %1").arg(arpTable.errorString())));
+        emit(error(Q_FUNC_INFO, tr("Could not open /proc/net/arp: %1").arg(arpTable.errorString())));
 
     if(allRequestsSent && webPagesToCheck<=0 && lookupIDs.isEmpty())
        emit(finished());

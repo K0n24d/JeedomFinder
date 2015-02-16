@@ -12,23 +12,23 @@ AdvancedSearchPage::AdvancedSearchPage(QWidget *parent) :
 {
     qDebug() << Q_FUNC_INFO << "Start";
 
-    setTitle(tr("Sélection des modes de recherche"));
-    setSubTitle(tr("Veuillez sélectionner ci-dessous les options à utiliser lors de la recherche"));
+    setTitle(tr("Search mode setup"));
+    setSubTitle(tr("Please select the options to be applied during the search"));
 
-    QGroupBox *modesRecherche = new QGroupBox(tr("Modes de recherche :"));
+    QGroupBox *modesRecherche = new QGroupBox(tr("Search modes :"));
 
-    QCheckBox *zeroconf = new QCheckBox(tr("Recherche via Zeroconf"));
+    QCheckBox *zeroconf = new QCheckBox(tr("Search using Zeroconf"));
     zeroconf->setChecked(true);
     registerField("zeroconf", zeroconf);
     connect(zeroconf, SIGNAL(stateChanged(int)), SIGNAL(completeChanged()));
 
-    udp = new QCheckBox(tr("Recherche via UDP + ARP Cache"));
+    udp = new QCheckBox(tr("Search using UDP + ARP Cache"));
     udp->setChecked(true);
     registerField("udp", udp);
     connect(udp, SIGNAL(stateChanged(int)), SIGNAL(completeChanged()));
     connect(udp, SIGNAL(stateChanged(int)), SLOT(udpChanged()));
 
-    QGroupBox *optionsRecherche = new QGroupBox(tr("Réseaux pour la recherche UDP + ARP Cache :"));
+    QGroupBox *optionsRecherche = new QGroupBox(tr("Networks to be scanned with UDP + ARP Cache :"));
     QVBoxLayout *optionsRechercheLayout = new QVBoxLayout();
     optionsRecherche->setLayout(optionsRechercheLayout);
     foreach(QNetworkInterface interface, QNetworkInterface::allInterfaces())
@@ -43,7 +43,7 @@ AdvancedSearchPage::AdvancedSearchPage(QWidget *parent) :
         {
             if(addressEntry.ip().protocol()!=QAbstractSocket::IPv4Protocol)
                 continue;
-            QCheckBox *ip = new QCheckBox(tr("Sur le réseau : %1/%2").arg(addressEntry.ip().toString(), addressEntry.netmask().toString()));
+            QCheckBox *ip = new QCheckBox(tr("Network : %1/%2").arg(addressEntry.ip().toString(), addressEntry.netmask().toString()));
             ip->setChecked(true);
             ipCheckBoxes << ip;
             registerField(addressEntry.ip().toString(), ip);
@@ -52,17 +52,17 @@ AdvancedSearchPage::AdvancedSearchPage(QWidget *parent) :
         }
     }
 
-    QCheckBox *ping = new QCheckBox(tr("Recherche via Ping + ARP Cache"));
+    QCheckBox *ping = new QCheckBox(tr("Search using Ping + ARP Cache"));
     ping->setChecked(false);
     registerField("ping", ping);
     connect(ping, SIGNAL(stateChanged(int)), SIGNAL(completeChanged()));
 
-    QCheckBox *dns = new QCheckBox(tr("Recherche via DNS"));
+    QCheckBox *dns = new QCheckBox(tr("Search using DNS"));
     dns->setChecked(true);
     registerField("dns", dns);
     connect(dns, SIGNAL(stateChanged(int)), SIGNAL(completeChanged()));
 
-    arpscan = new QCheckBox(tr("Recherche via ARP Ping"));
+    arpscan = new QCheckBox(tr("Search using ARP Ping"));
     registerField("arpscan", arpscan);
     connect(arpscan, SIGNAL(stateChanged(int)), SIGNAL(completeChanged()));
 

@@ -27,7 +27,7 @@ SearchPage::SearchPage(QWidget *parent) :
     hostsTable.setSelectionBehavior(QAbstractItemView::SelectRows);
 
     QStringList labels;
-    labels << tr("Nom") << tr("URL") << tr("Adresse IP") << tr("Description");
+    labels << tr("Name") << tr("URL") << tr("IP Address") << tr("Description");
     hostsTable.setHorizontalHeaderLabels(labels);
     hostsTable.setDisabled(true);
     connect(&hostsTable, SIGNAL(itemSelectionChanged()), this, SIGNAL(completeChanged()));
@@ -51,15 +51,15 @@ void SearchPage::initializePage()
 
     if(!field("advancedSearch").toBool())
     {
-        title=tr("Recherche automatique en cours...");
+        title=tr("Automatique search...");
     }
     else
     {
-        title=tr("Recherche avancée en cours...");
+        title=tr("Advanced search...");
     }
 
     setTitle(title);
-    setSubTitle(tr("Les box Jeedom apparaîtront au fur et à mesure lors de la recherche."));
+    setSubTitle(tr("Jeedom boxes will appear as they're found during the search."));
 
     hostsTable.clearContents();
     hostsTable.setRowCount(0);
@@ -256,17 +256,17 @@ void SearchPage::searchFinished()
     {
         progressBar.setRange(0,100);
         progressBar.setVisible(false);
-        setTitle(tr("Recherche terminée."));
+        setTitle(tr("Search finished."));
         if(hostsTable.rowCount()<=0)
         {
-            setSubTitle(tr("Aucune box Jeedom n'a pu être trouvée. Veuillez vérifier que celles-ci sont bien allumées "
-                           "et connectées au même réseau que votre ordinateur."
+            setSubTitle(tr("No Jeedom box could be found. Please make sure they're powered on "
+                           "and connected to the same network than your computer."
                            ));
-            QMessageBox::warning(this, tr("Jeedom Finder"), tr("Aucun serveur Jeedom n'a pu être trouvé"), QMessageBox::Close, QMessageBox::Close);
+            QMessageBox::warning(this, tr("Jeedom Finder"), tr("No Jeedom box could be found."), QMessageBox::Close, QMessageBox::Close);
         }
         else
-            setSubTitle(tr("Il est préférable de mémoriser sur votre navigateur "
-                           "l'adresse d'accès à votre box Jeedom, pour les prochaines connexions."
+            setSubTitle(tr("It is recommended to save the access URL to your Jeedom box "
+                           "on your computer for futur use."
                            ));
     }
     else

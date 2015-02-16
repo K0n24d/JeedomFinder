@@ -1,0 +1,227 @@
+msgid ""
+msgstr ""
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"X-Language: fr_FR\n"
+"X-Qt-Contexts: true\n"
+
+#: ../advancedsearchpage.cpp:15
+msgctxt "AdvancedSearchPage|"
+msgid "Search mode setup"
+msgstr ""
+
+#: ../advancedsearchpage.cpp:16
+msgctxt "AdvancedSearchPage|"
+msgid "Please select the options to be applied during the search"
+msgstr ""
+
+#: ../advancedsearchpage.cpp:18
+msgctxt "AdvancedSearchPage|"
+msgid "Search modes :"
+msgstr ""
+
+#: ../advancedsearchpage.cpp:20
+msgctxt "AdvancedSearchPage|"
+msgid "Search using Zeroconf"
+msgstr ""
+
+#: ../advancedsearchpage.cpp:25
+msgctxt "AdvancedSearchPage|"
+msgid "Search using UDP + ARP Cache"
+msgstr ""
+
+#: ../advancedsearchpage.cpp:31
+msgctxt "AdvancedSearchPage|"
+msgid "Networks to be scanned with UDP + ARP Cache :"
+msgstr ""
+
+#: ../advancedsearchpage.cpp:46
+#, qt-format
+msgctxt "AdvancedSearchPage|"
+msgid "Network : %1/%2"
+msgstr ""
+
+#: ../advancedsearchpage.cpp:55
+msgctxt "AdvancedSearchPage|"
+msgid "Search using Ping + ARP Cache"
+msgstr ""
+
+#: ../advancedsearchpage.cpp:60
+msgctxt "AdvancedSearchPage|"
+msgid "Search using DNS"
+msgstr ""
+
+#: ../advancedsearchpage.cpp:65
+msgctxt "AdvancedSearchPage|"
+msgid "Search using ARP Ping"
+msgstr ""
+
+#: ../bonjoursearchworker.cpp:96
+#, qt-format
+msgctxt "BonjourSearchWorker|"
+msgid "Zeroconf (Name: %1, Type: %2, Domain: %3, Port: %4)"
+msgstr ""
+
+#: ../dnslookupsearchworker.cpp:65
+#, qt-format
+msgctxt "DNSLookupSearchWorker|"
+msgid "DNS Search (%1)"
+msgstr ""
+
+#: ../intropage.cpp:12
+msgctxt "IntroPage|"
+msgid "Network discovery tool for Jeedom boxes"
+msgstr ""
+
+#: ../intropage.cpp:16
+msgctxt "IntroPage|"
+msgid ""
+"This software will allow you to easily access your Jeedom boxes connected to "
+"your local network.\n"
+"\n"
+"Your computer has to be on the same network than your Jeedom boxes."
+msgstr ""
+
+#: ../intropage.cpp:25
+msgctxt "IntroPage|"
+msgid "Use &automatic search"
+msgstr ""
+
+#: ../intropage.cpp:27
+msgctxt "IntroPage|"
+msgid "Use ad&vanced search options"
+msgstr ""
+
+#: ../intropage.cpp:38
+msgctxt "IntroPage|"
+msgid "Sea&rch"
+msgstr ""
+
+#: ../pingsearchworker.cpp:143
+#, qt-format
+msgctxt "PingSearchWorker|"
+msgid ""
+"Could not start ping :\n"
+"%1"
+msgstr ""
+
+#: ../pingsearchworker.cpp:220
+#, qt-format
+msgctxt "PingSearchWorker|"
+msgid ""
+"Could not run arp tool.\n"
+"%1"
+msgstr ""
+
+#: ../pingsearchworker.cpp:323
+#, qt-format
+msgctxt "PingSearchWorker|"
+msgid "Could not open /proc/net/arp: %1"
+msgstr ""
+
+#: ../pingsearchworker.cpp:337
+#, qt-format
+msgctxt "PingSearchWorker|"
+msgid "UDP + ARP cache (MAC : %1)"
+msgstr ""
+
+#: ../quickstartwizard.cpp:26
+msgctxt "QuickStartWizard|"
+msgid "Jeedom Finder"
+msgstr ""
+
+#: ../searchpage.cpp:30
+msgctxt "SearchPage|"
+msgid "URL"
+msgstr ""
+
+#: ../searchpage.cpp:30
+msgctxt "SearchPage|"
+msgid "Name"
+msgstr ""
+
+#: ../searchpage.cpp:30
+msgctxt "SearchPage|"
+msgid "IP Address"
+msgstr ""
+
+#: ../searchpage.cpp:54
+msgctxt "SearchPage|"
+msgid "Automatique search..."
+msgstr ""
+
+#: ../searchpage.cpp:58
+msgctxt "SearchPage|"
+msgid "Advanced search..."
+msgstr ""
+
+#: ../searchpage.cpp:62
+msgctxt "SearchPage|"
+msgid "Jeedom boxes will appear as they're found during the search."
+msgstr ""
+
+#~ msgctxt "SearchPage|"
+#~ msgid "Finished searching."
+#~ msgstr ""
+
+#: ../searchpage.cpp:262
+msgctxt "SearchPage|"
+msgid ""
+"No Jeedom box could be found. Please make sure they're powered on and "
+"connected to the same network than your computer."
+msgstr ""
+
+#: ../searchpage.cpp:265
+msgctxt "SearchPage|"
+msgid "No Jeedom box could be found."
+msgstr ""
+
+#: ../searchpage.cpp:268
+msgctxt "SearchPage|"
+msgid ""
+"It is recommended to save the access URL to your Jeedom box on your computer "
+"for futur use."
+msgstr ""
+
+#: ../searchpage.cpp:30
+msgctxt "SearchPage|"
+msgid "Description"
+msgstr ""
+
+#: ../searchpage.cpp:259
+msgctxt "SearchPage|"
+msgid "Search finished."
+msgstr ""
+
+#: ../searchpage.cpp:265
+msgctxt "SearchPage|"
+msgid "Jeedom Finder"
+msgstr ""
+
+#: ../searchworker.cpp:105
+#, qt-format
+msgctxt "SearchWorker|"
+msgid " Redirection : %1"
+msgstr ""
+
+#: ../udpsearchworker.cpp:216
+#, qt-format
+msgctxt "UdpSearchWorker|"
+msgid ""
+"Could not run arp tool.\n"
+"%1"
+msgstr ""
+
+#: ../udpsearchworker.cpp:317
+#, qt-format
+msgctxt "UdpSearchWorker|"
+msgid "Could not open /proc/net/arp: %1"
+msgstr ""
+
+#: ../udpsearchworker.cpp:331
+#, qt-format
+msgctxt "UdpSearchWorker|"
+msgid "UDP + ARP cache (MAC : %1)"
+msgstr ""

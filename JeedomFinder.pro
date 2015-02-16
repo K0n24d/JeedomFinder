@@ -111,3 +111,13 @@ DEFINES *= QT_USE_QSTRINGBUILDER
 contains(QT_CONFIG, openssl) | contains(QT_CONFIG, openssl-linked) {
   DEFINES *= HAS_SSL_SUPPORT
 }
+
+TRANSLATIONS += \
+    Translations/JeedomFinder_fr.ts \
+    Translations/JeedomFinder_de.ts \
+    Translations/JeedomFinder_es.ts \
+
+RESOURCES += \
+    translations.qrc
+
+include(updateqm.pri)

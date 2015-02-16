@@ -5,7 +5,4 @@
         <file alias="logo">Resources/logo-jeedom-petit-nom-couleur_64x68.png</file>
         <file alias="icon">Resources/logo-jeedom-petit-nom-couleur-128x128.png</file>
     </qresource>
-    <qresource prefix="/translations">
-        <file alias="qt_fr">Resources/qt_fr.qm</file>
-    </qresource>
 </RCC>

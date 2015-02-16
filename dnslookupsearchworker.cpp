@@ -62,7 +62,7 @@ void DNSLookupSearchWorker::reverseLookedUp(QHostInfo reverseLookup)
         qDebug() << Q_FUNC_INFO << "Utilisation du reverse" << thisHost.name;
     }
     thisHost.ip = reverseLookup.addresses().at(0).toString();
-    thisHost.desc = tr("Recherche DNS (%1)").arg(hostInfo.hostName());
+    thisHost.desc = tr("DNS Search (%1)").arg(hostInfo.hostName());
 
     QString urlHostName(thisHost.name);
     if(multipleIPs)

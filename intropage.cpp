@@ -9,22 +9,22 @@ IntroPage::IntroPage(QWidget *parent) :
 {
     qDebug() << Q_FUNC_INFO << "Start";
 
-    setTitle(tr("Logiciel de découverte réseau de box Jeedom"));
+    setTitle(tr("Network discovery tool for Jeedom boxes"));
     QPixmap watermark(":images/panel");
     setPixmap(QWizard::WatermarkPixmap, watermark);
 
     QLabel *label = new QLabel(tr(
-        "Ce logiciel va vous permettre d'accéder facilement à votre box domotique "
-        "Jeedom qui est connectée sur votre réseau local."
-        "\n\nVotre ordinateur doit être sur le même réseau que votre box Jeedom."
+        "This software will allow you to easily access your Jeedom boxes "
+        "connected to your local network."
+        "\n\nYour computer has to be on the same network than your Jeedom boxes."
         ));
 
 //    label->setMaximumWidth(watermark.width()*1.5);
     label->setWordWrap(true);
 
-    QRadioButton *normalSearch = new QRadioButton(tr("Utiliser la recherche &automatique"));
+    QRadioButton *normalSearch = new QRadioButton(tr("Use &automatic search"));
     normalSearch->setChecked(true);
-    QRadioButton *advancedSearch = new QRadioButton(tr("Utiliser la recherche a&vancée"));
+    QRadioButton *advancedSearch = new QRadioButton(tr("Use ad&vanced search options"));
     registerField("advancedSearch", advancedSearch);
 
     QVBoxLayout *layout = new QVBoxLayout;
@@ -35,7 +35,7 @@ IntroPage::IntroPage(QWidget *parent) :
     layout->addStretch(1);
     setLayout(layout);
 
-    setButtonText(QWizard::NextButton, tr("Lancer la &recherche"));
+    setButtonText(QWizard::NextButton, tr("Sea&rch"));
 
     qDebug() << Q_FUNC_INFO << "End";
 }

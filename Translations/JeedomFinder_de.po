@@ -1,0 +1,265 @@
+msgid ""
+msgstr ""
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Language: de_DE\n"
+"X-Qt-Contexts: true\n"
+
+#: ../advancedsearchpage.cpp:15
+#, fuzzy
+msgctxt "AdvancedSearchPage|"
+msgid "Search mode setup"
+msgstr "Konfiguration der Sucharten"
+
+#: ../advancedsearchpage.cpp:16
+#, fuzzy
+msgctxt "AdvancedSearchPage|"
+msgid "Please select the options to be applied during the search"
+msgstr "Bitte wählen Sie die zu benutzenden Optionen für die Suche aus"
+
+#: ../advancedsearchpage.cpp:18
+#, fuzzy
+msgctxt "AdvancedSearchPage|"
+msgid "Search modes :"
+msgstr "Sucharten:"
+
+#: ../advancedsearchpage.cpp:20
+#, fuzzy
+msgctxt "AdvancedSearchPage|"
+msgid "Search using Zeroconf"
+msgstr "Suche mit Zeroconf"
+
+#: ../advancedsearchpage.cpp:25
+#, fuzzy
+msgctxt "AdvancedSearchPage|"
+msgid "Search using UDP + ARP Cache"
+msgstr "Suche mit UDP + ARP Cache"
+
+#: ../advancedsearchpage.cpp:31
+#, fuzzy
+msgctxt "AdvancedSearchPage|"
+msgid "Networks to be scanned with UDP + ARP Cache :"
+msgstr "Netzwerke für die UDP + ARP Cache Suche:"
+
+#: ../advancedsearchpage.cpp:46
+#, fuzzy, qt-format
+msgctxt "AdvancedSearchPage|"
+msgid "Network : %1/%2"
+msgstr "Netzwerk: %1/%2"
+
+#: ../advancedsearchpage.cpp:55
+#, fuzzy
+msgctxt "AdvancedSearchPage|"
+msgid "Search using Ping + ARP Cache"
+msgstr "Suche mit Ping + ARP Cache"
+
+#: ../advancedsearchpage.cpp:60
+#, fuzzy
+msgctxt "AdvancedSearchPage|"
+msgid "Search using DNS"
+msgstr "Suche über DNS"
+
+#: ../advancedsearchpage.cpp:65
+#, fuzzy
+msgctxt "AdvancedSearchPage|"
+msgid "Search using ARP Ping"
+msgstr "Suche mit ARP Ping"
+
+#: ../bonjoursearchworker.cpp:96
+#, fuzzy, qt-format
+msgctxt "BonjourSearchWorker|"
+msgid "Zeroconf (Name: %1, Type: %2, Domain: %3, Port: %4)"
+msgstr "Zeroconf (Name: %1, Type: %2, Domain: %3, Port: %4)"
+
+#: ../dnslookupsearchworker.cpp:65
+#, fuzzy, qt-format
+msgctxt "DNSLookupSearchWorker|"
+msgid "DNS Search (%1)"
+msgstr "DNS Suche (%1)"
+
+#: ../intropage.cpp:12
+#, fuzzy
+msgctxt "IntroPage|"
+msgid "Network discovery tool for Jeedom boxes"
+msgstr "Netzwerk-Suche nach Jeedom Zentralen"
+
+#: ../intropage.cpp:16
+#, fuzzy
+msgctxt "IntroPage|"
+msgid ""
+"This software will allow you to easily access your Jeedom boxes connected to "
+"your local network.\n"
+"\n"
+"Your computer has to be on the same network than your Jeedom boxes."
+msgstr ""
+"Diese Software erleichtert Ihnen den Zugriff auf Ihre Jeedom Zentralen im "
+"lokalen Netzwerk.\n"
+"\n"
+"Ihr Computer muss an dasselbe Netzwerk angeschlossen sein wie Ihre Jeedom "
+"Zentrale."
+
+#: ../intropage.cpp:25
+#, fuzzy
+msgctxt "IntroPage|"
+msgid "Use &automatic search"
+msgstr "&Automatische Suche benutzen"
+
+#: ../intropage.cpp:27
+#, fuzzy
+msgctxt "IntroPage|"
+msgid "Use ad&vanced search options"
+msgstr "&Erweiterte Suche benutzen"
+
+#: ../intropage.cpp:38
+#, fuzzy
+msgctxt "IntroPage|"
+msgid "Sea&rch"
+msgstr "&Suchen"
+
+#: ../pingsearchworker.cpp:143
+#, fuzzy, qt-format
+msgctxt "PingSearchWorker|"
+msgid ""
+"Could not start ping :\n"
+"%1"
+msgstr ""
+"Konnte ping nicht starten:\n"
+"%1"
+
+#: ../pingsearchworker.cpp:220
+#, fuzzy, qt-format
+msgctxt "PingSearchWorker|"
+msgid ""
+"Could not run arp tool.\n"
+"%1"
+msgstr ""
+"Konnte arp tool nicht starten.\n"
+"%1"
+
+#: ../pingsearchworker.cpp:323
+#, fuzzy, qt-format
+msgctxt "PingSearchWorker|"
+msgid "Could not open /proc/net/arp: %1"
+msgstr "Konnte /proc/net/arp nicht öffnen: %1"
+
+#: ../pingsearchworker.cpp:337
+#, fuzzy, qt-format
+msgctxt "PingSearchWorker|"
+msgid "UDP + ARP cache (MAC : %1)"
+msgstr "UDP + ARP cache (MAC : %1)"
+
+#: ../quickstartwizard.cpp:26
+#, fuzzy
+msgctxt "QuickStartWizard|"
+msgid "Jeedom Finder"
+msgstr "Jeedom Finder"
+
+#: ../searchpage.cpp:30
+#, fuzzy
+msgctxt "SearchPage|"
+msgid "URL"
+msgstr "URL"
+
+#: ../searchpage.cpp:30
+#, fuzzy
+msgctxt "SearchPage|"
+msgid "Name"
+msgstr "Name"
+
+#: ../searchpage.cpp:30
+#, fuzzy
+msgctxt "SearchPage|"
+msgid "IP Address"
+msgstr "IP Addresse"
+
+#: ../searchpage.cpp:54
+#, fuzzy
+msgctxt "SearchPage|"
+msgid "Automatique search..."
+msgstr "Automatische Suche..."
+
+#: ../searchpage.cpp:58
+#, fuzzy
+msgctxt "SearchPage|"
+msgid "Advanced search..."
+msgstr "Erweiterte Suche..."
+
+#: ../searchpage.cpp:62
+#, fuzzy
+msgctxt "SearchPage|"
+msgid "Jeedom boxes will appear as they're found during the search."
+msgstr "Jeedom Zentralen erscheinen hier sobald sie gefunden wurden."
+
+#: ../searchpage.cpp:262
+#, fuzzy
+msgctxt "SearchPage|"
+msgid ""
+"No Jeedom box could be found. Please make sure they're powered on and "
+"connected to the same network than your computer."
+msgstr ""
+"Keine Jeedom Zentrale wurde gefunden. Bitte stellen Sie sicher dass diese an "
+"sind und and das selbe Netzwerk angeschlossen sind wie Ihr Computer."
+
+#: ../searchpage.cpp:265
+#, fuzzy
+msgctxt "SearchPage|"
+msgid "No Jeedom box could be found."
+msgstr "Keine Jeedom Zentrale wurde gefunden."
+
+#: ../searchpage.cpp:268
+#, fuzzy
+msgctxt "SearchPage|"
+msgid ""
+"It is recommended to save the access URL to your Jeedom box on your computer "
+"for futur use."
+msgstr ""
+"Für zukünftige zugriffe ist es empfohlen die gefundene URL in Ihrem Browser "
+"zu sichern."
+
+#: ../searchpage.cpp:30
+#, fuzzy
+msgctxt "SearchPage|"
+msgid "Description"
+msgstr "Beschreibung"
+
+#: ../searchpage.cpp:259
+#, fuzzy
+msgctxt "SearchPage|"
+msgid "Search finished."
+msgstr "Suche beendet."
+
+#: ../searchpage.cpp:265
+#, fuzzy
+msgctxt "SearchPage|"
+msgid "Jeedom Finder"
+msgstr "Jeedom Finder"
+
+#: ../searchworker.cpp:105
+#, fuzzy, qt-format
+msgctxt "SearchWorker|"
+msgid " Redirection : %1"
+msgstr "Weiterleitung: %1"
+
+#: ../udpsearchworker.cpp:216
+#, fuzzy, qt-format
+msgctxt "UdpSearchWorker|"
+msgid ""
+"Could not run arp tool.\n"
+"%1"
+msgstr ""
+"Konnte arp tool nicht starten.\n"
+"%1"
+
+#: ../udpsearchworker.cpp:317
+#, fuzzy, qt-format
+msgctxt "UdpSearchWorker|"
+msgid "Could not open /proc/net/arp: %1"
+msgstr "Konnte /proc/net/arp nicht öffnen: %1"
+
+#: ../udpsearchworker.cpp:331
+#, fuzzy, qt-format
+msgctxt "UdpSearchWorker|"
+msgid "UDP + ARP cache (MAC : %1)"
+msgstr "UDP + ARP cache (MAC: %1)"
