@@ -95,7 +95,7 @@ linux-g++* {
 }
 
 CONFIG(release, debug|release) {
-  linux-g++*:QMAKE_POST_LINK=strip $(TARGET) && upx -k --ultra-brute $(TARGET)
+#  linux-g++*:QMAKE_POST_LINK=strip $(TARGET) && upx -k --ultra-brute $(TARGET)
   mac*:QMAKE_POST_LINK=macdeployqt JeedomFinder.app $(TARGET) -dmg
 }
 
@@ -115,7 +115,6 @@ contains(QT_CONFIG, openssl) | contains(QT_CONFIG, openssl-linked) {
 TRANSLATIONS += \
     Translations/JeedomFinder_fr.ts \
     Translations/JeedomFinder_de.ts \
-    Translations/JeedomFinder_es.ts \
 
 RESOURCES += \
     translations.qrc

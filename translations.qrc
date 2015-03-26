@@ -2,8 +2,6 @@
     <qresource prefix="/translations">
         <file alias="qt_fr">Translations/qt_fr.qm</file>
         <file alias="JeedomFinder_fr">Translations/JeedomFinder_fr.qm</file>
-        <file alias="qt_es">Translations/qt_es.qm</file>
-        <file alias="JeedomFinder_es">Translations/JeedomFinder_es.qm</file>
         <file alias="qt_de">Translations/qt_de.qm</file>
         <file alias="JeedomFinder_de">Translations/JeedomFinder_de.qm</file>
     </qresource>
