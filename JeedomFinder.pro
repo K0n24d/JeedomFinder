@@ -8,7 +8,7 @@ QT       += core gui network
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-CONFIG += static
+#CONFIG += static
 
 TARGET = JeedomFinder
 TEMPLATE = app
@@ -68,31 +68,31 @@ defineTest(matches) {
   }
 }
  
-linux-g++* {
-   for(lib, LIBS) {
-      # If it's something we don't recognize (neither "-lfoo" nor "-Lfoo") just add it directly
-      !matches(lib, "^-l.*$") {
-         libtemp *= $${lib}
-      # Don't statically link POSIX threading or dlOpen libraries
-      } else:isEqual(lib, "-lpthread") | isEqual(lib, "-ldl") {
-         libtemp *= $${lib}
-      # Ask GCC to find a static version of the library
-      } else {
-         libfile = $$replace(lib, "^-l(.*)$", "lib\\1.a")
-         libloc = $$system("gcc $${LIBS} -print-file-name=$${libfile}")
-         # If it didn't find it, just keep the 
-         isEqual(libloc, $${libfile}) {
-            libtemp *= $${lib}
-         } else {
-            libtemp *= $${libloc}
-         }
-      }
-   }
-   LIBS = $${libtemp}
-   unset(libtemp)
-   unset(libfile)
-   unset(libloc)
-}
+#linux-g++* {
+#   for(lib, LIBS) {
+#      # If it's something we don't recognize (neither "-lfoo" nor "-Lfoo") just add it directly
+#      !matches(lib, "^-l.*$") {
+#         libtemp *= $${lib}
+#      # Don't statically link POSIX threading or dlOpen libraries
+#      } else:isEqual(lib, "-lpthread") | isEqual(lib, "-ldl") {
+#         libtemp *= $${lib}
+#      # Ask GCC to find a static version of the library
+#      } else {
+#         libfile = $$replace(lib, "^-l(.*)$", "lib\\1.a")
+#         libloc = $$system("gcc $${LIBS} -print-file-name=$${libfile}")
+#         # If it didn't find it, just keep the 
+#         isEqual(libloc, $${libfile}) {
+#            libtemp *= $${lib}
+#         } else {
+#            libtemp *= $${libloc}
+#         }
+#      }
+#   }
+#   LIBS = $${libtemp}
+#   unset(libtemp)
+#   unset(libfile)
+#   unset(libloc)
+#}
 
 CONFIG(release, debug|release) {
 #  linux-g++*:QMAKE_POST_LINK=strip $(TARGET) && upx -k --ultra-brute $(TARGET)
