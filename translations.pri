@@ -26,11 +26,13 @@ TRANSLATIONS_FILES =
 # run LRELEASE to generate the qm files
 qtPrepareTool(LRELEASE, lrelease)
 for(tsfile, TRANSLATIONS) {
-    qmfile = $$shadowed($$tsfile)
+    qmfile = $$OUT_PWD/Translations/$$basename(tsfile)
+#    qmfile = $$shadowed($$tsfile)
     qmfile ~= s,\\.ts$,.qm,
     qmdir = $$dirname(qmfile)
     !exists($$qmdir) {
-        mkpath($$qmdir)|error("Aborting.")
+        command = mkdir -p $$qmdir
+        system($$command)|error("Aborting.")
     }
     command = $$LRELEASE -removeidentical $$tsfile -qm  $$qmfile
     system($$command)|error("Failed to run: $$command")
@@ -45,21 +47,24 @@ RESOURCE_CONTENT = \
     "<qresource>"
 
 for(translationfile, TRANSLATIONS_FILES) {
-    relativepath_out = $$relative_path($$translationfile, $$OUT_PWD)
-    RESOURCE_CONTENT += "<file alias=\"$$relativepath_out\">$$relativepath_out</file>"
+#    relativepath_out = $$relative_path($$translationfile, $$OUT_PWD)
+    relativepath_out = $$translationfile
+    relativepath_out ~= s,$$OUT_PWD/,,
+    RESOURCE_CONTENT += "<file alias=\\\"$$relativepath_out\\\">$$relativepath_out</file>"
 }
 
 static:for(translationfile, QT_TRANSLATIONS_FILES) {
 #    relativepath_out = $$relative_path($$translationfile, $$OUT_PWD)
 #    RESOURCE_CONTENT += "<file alias=\"$$relativepath_out\">$$relativepath_out</file>"
-    RESOURCE_CONTENT += "<file alias=\"Translations/$$translationfile\">$$[QT_INSTALL_TRANSLATIONS]/$$translationfile</file>"
+    RESOURCE_CONTENT += "<file alias=\\\"Translations/$$translationfile\\\">$$[QT_INSTALL_TRANSLATIONS]/$$translationfile</file>"
 }
 
 RESOURCE_CONTENT += \
     "</qresource>" \
     "</RCC>"
 
-write_file($$GENERATED_RESOURCE_FILE, RESOURCE_CONTENT)|error("Aborting.")
+command = echo \"$$RESOURCE_CONTENT\" > $$GENERATED_RESOURCE_FILE
+system($$command)|error("Aborting.")
 
 RESOURCES += $$GENERATED_RESOURCE_FILE
 
