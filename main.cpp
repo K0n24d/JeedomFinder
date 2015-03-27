@@ -93,7 +93,7 @@ int main(int argc, char *argv[])
 
 #ifndef QT_NO_TRANSLATION
     QTranslator *translator = new QTranslator(&app);
-    if(translator->load(QLocale::system(), QLatin1String("qt"), QLatin1String("_"), ":translations/", QLatin1String(".qm")))
+    if(translator->load(QLocale::system(), QLatin1String("qt"), QLatin1String("_"), ":Translations/", QLatin1String(".qm")))
         app.installTranslator(translator);
     else
     {
@@ -103,11 +103,11 @@ int main(int argc, char *argv[])
             app.installTranslator(translator);
     }
 #endif
-/*
+
     QTranslator *jeedomFinderTranslator = new QTranslator(&app);
-    if(jeedomFinderTranslator->load(QLocale::system(), QLatin1String("JeedomFinder"), QLatin1String("_"), ":translations/", QLatin1String(".qm")))
+    if(jeedomFinderTranslator->load(QLocale::system(), QLatin1String("JeedomFinder"), QLatin1String("_"), ":Translations/", QLatin1String(".qm")))
         app.installTranslator(jeedomFinderTranslator);
-*/
+
     QuickStartWizard wizard;
     wizard.show();
 

@@ -17,10 +17,12 @@ AdvancedSearchPage::AdvancedSearchPage(QWidget *parent) :
 
     QGroupBox *modesRecherche = new QGroupBox(tr("Search modes :"));
 
+#ifdef WITH_ZEROCONF
     QCheckBox *zeroconf = new QCheckBox(tr("Search using Zeroconf"));
     zeroconf->setChecked(true);
     registerField("zeroconf", zeroconf);
     connect(zeroconf, SIGNAL(stateChanged(int)), SIGNAL(completeChanged()));
+#endif
 
     udp = new QCheckBox(tr("Search using UDP + ARP Cache"));
     udp->setChecked(true);
@@ -67,7 +69,11 @@ AdvancedSearchPage::AdvancedSearchPage(QWidget *parent) :
     connect(arpscan, SIGNAL(stateChanged(int)), SIGNAL(completeChanged()));
 
     QVBoxLayout *modesRechercheLayout = new QVBoxLayout();
+
+#ifdef WITH_ZEROCONF
     modesRechercheLayout->addWidget(zeroconf);
+#endif
+
     modesRechercheLayout->addWidget(udp);
     modesRechercheLayout->addWidget(ping);
     modesRechercheLayout->addWidget(dns);

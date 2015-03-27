@@ -1,7 +1,11 @@
 #include "searchpage.h"
 #include "udpsearchworker.h"
 #include "pingsearchworker.h"
+
+#ifdef WITH_ZEROCONF
 #include "bonjoursearchworker.h"
+#endif
+
 #include "dnslookupsearchworker.h"
 #include <QVariant>
 #include <QVBoxLayout>
@@ -77,11 +81,13 @@ void SearchPage::initializePage()
     if(field("dns").toBool())
         addWorker(new DNSLookupSearchWorker);
 
+#ifdef WITH_ZEROCONF
     if(field("zeroconf").toBool())
     {
         addWorker(new BonjourSearchWorker(QString("_https._tcp")));
         addWorker(new BonjourSearchWorker(QString("_http._tcp")));
     }
+#endif
 
     if(field("udp").toBool())
         addWorker(new UdpSearchWorker(wizard()));
