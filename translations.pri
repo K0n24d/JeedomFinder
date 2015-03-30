@@ -27,7 +27,6 @@ TRANSLATIONS_FILES =
 qtPrepareTool(LRELEASE, lrelease)
 for(tsfile, TRANSLATIONS) {
     qmfile = $$OUT_PWD/Translations/$$basename(tsfile)
-#    qmfile = $$shadowed($$tsfile)
     qmfile ~= s,\\.ts$,.qm,
     qmdir = $$dirname(qmfile)
     !exists($$qmdir) {
@@ -47,15 +46,12 @@ RESOURCE_CONTENT = \
     "<qresource>"
 
 for(translationfile, TRANSLATIONS_FILES) {
-#    relativepath_out = $$relative_path($$translationfile, $$OUT_PWD)
     relativepath_out = $$translationfile
     relativepath_out ~= s,$$OUT_PWD/,,
     RESOURCE_CONTENT += "<file alias=\\\"$$relativepath_out\\\">$$relativepath_out</file>"
 }
 
 static:for(translationfile, QT_TRANSLATIONS_FILES) {
-#    relativepath_out = $$relative_path($$translationfile, $$OUT_PWD)
-#    RESOURCE_CONTENT += "<file alias=\"$$relativepath_out\">$$relativepath_out</file>"
     RESOURCE_CONTENT += "<file alias=\\\"Translations/$$translationfile\\\">$$[QT_INSTALL_TRANSLATIONS]/$$translationfile</file>"
 }
 
