@@ -60,9 +60,10 @@ zeroconf {
 
     linux-g++*:LIBS+=-ldns_sd -lavahi-client -lavahi-common -ldbus-1
 
-    win32 {
+    win* {
         LIBS+=-ldnssd
-        LIBPATH+="C:/Program Files/Bonjour SDK/Lib/Win32"
+        win32:LIBPATH+="C:/Program Files/Bonjour SDK/Lib/Win32"
+        win64:LIBPATH+="C:/Program Files/Bonjour SDK/Lib/Win64"
         INCLUDEPATH+="C:/Program Files/Bonjour SDK/Include"
     }
 }
@@ -114,7 +115,7 @@ CONFIG(release, debug|release) {
   mac*:QMAKE_POST_LINK=macdeployqt JeedomFinder.app $(TARGET) -dmg
 }
 
-win32:RC_FILE += \
+win*:RC_FILE += \
     icon.rc
 
 mac*:ICON = \

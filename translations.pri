@@ -18,6 +18,7 @@ LANGUAGES = fr de
 
 # Available translations
 TRANSLATIONS = $$prependAll(LANGUAGES, $$PWD/Translations/JeedomFinder_, .ts)
+
 QT_TRANSLATIONS_FILES = $$prependAll(LANGUAGES, qt_, .qm)
 
 # Used to embed the qm files in resources
@@ -31,9 +32,11 @@ for(tsfile, TRANSLATIONS) {
     qmdir = $$dirname(qmfile)
     !exists($$qmdir) {
         command = mkdir -p $$qmdir
+        win*:command ~= s,\',\",g
         system($$command)|error("Aborting.")
     }
     command = $$LRELEASE -removeidentical $$tsfile -qm  $$qmfile
+    win*:command ~= s,\',\",g
     system($$command)|error("Failed to run: $$command")
     TRANSLATIONS_FILES += $$qmfile
 }
@@ -79,6 +82,7 @@ for(file, TSFILES) {
     QMAKE_EXTRA_TARGETS += ts-$$lang
 }
 ts-all.commands = cd $$PWD && $$LUPDATE $$SOURCES $$APP_FILES -ts $$TSFILES
+win*:ts-all.commands ~= s,\',\",g
 QMAKE_EXTRA_TARGETS += ts-all
 
 # COMMIT - Make a new target for lconvert and committing the ts files
@@ -102,5 +106,6 @@ isEqual(QMAKE_DIR_SEP, /) {
             $$LCONVERT -i %%f -o %%f $$escape_expand(\\n\\t) \
         cd $$wd && git add Translations/*_??.ts && git commit
 }
+win*:commit-ts.commands ~= s,\',\",g
 QMAKE_EXTRA_TARGETS += commit-ts
 
