@@ -186,7 +186,7 @@ Votre ordinateur doit être sur le même réseau que votre box Jeedom.</translat
     <message>
         <location filename="../searchpage.cpp" line="268"/>
         <source>It is recommended to save the access URL to your Jeedom box on your computer for futur use.</source>
-        <translation>l est préférable de mémoriser sur votre navigateur l&apos;adresse d&apos;accès à votre box Jeedom, pour les prochaines connexions.</translation>
+        <translation>Il est préférable de mémoriser sur votre navigateur l&apos;adresse d&apos;accès à votre box Jeedom, pour les prochaines connexions.</translation>
     </message>
     <message>
         <location filename="../searchpage.cpp" line="30"/>
