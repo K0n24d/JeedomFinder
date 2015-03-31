@@ -174,7 +174,7 @@ void SearchPage::cleanupPage()
 
 bool SearchPage::isComplete() const
 {
-    return !(hostsTable.selectedRanges().isEmpty());
+    return (searchWorkers.isEmpty() && (hostsTable.rowCount()>0));
 }
 
 void SearchPage::gotHost(Host *newHost)
@@ -184,8 +184,6 @@ void SearchPage::gotHost(Host *newHost)
     delete newHost;
 
     QMutexLocker tableMutexLocker(&tableMutex);
-
-//    QMessageBox::information(NULL, Q_FUNC_INFO, tr("Nom: %1, IPv4: %2, Description: %3").arg(name, ipv4, description));
 
     if(hosts.contains(host->url))
     {
@@ -274,6 +272,7 @@ void SearchPage::searchFinished()
             setSubTitle(tr("It is recommended to save the access URL to your Jeedom box "
                            "on your computer for futur use."
                            ));
+            emit(completeChanged());
     }
     else
     {
