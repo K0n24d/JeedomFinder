@@ -62,7 +62,9 @@ RESOURCE_CONTENT += \
     "</qresource>" \
     "</RCC>"
 
+win*:RESOURCE_CONTENT ~= s,\\\\\",\",g
 command = echo \"$$RESOURCE_CONTENT\" > $$GENERATED_RESOURCE_FILE
+win*:command += & sed -i -e \'s,^\"\\(.*\\)\" *$,\1,g\' $$GENERATED_RESOURCE_FILE
 system($$command)|error("Aborting.")
 
 RESOURCES += $$GENERATED_RESOURCE_FILE
