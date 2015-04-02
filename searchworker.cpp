@@ -134,3 +134,8 @@ void SearchWorker::checkWebPageTimeout()
         stop();
     }
 }
+
+bool SearchWorker::available()
+{
+    return true;
+}

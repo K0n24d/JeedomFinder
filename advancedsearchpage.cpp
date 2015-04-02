@@ -6,6 +6,7 @@
 #include <QtDebug>
 #include <QNetworkInterface>
 #include <QNetworkAddressEntry>
+#include "bonjoursearchworker.h"
 
 AdvancedSearchPage::AdvancedSearchPage(QWidget *parent) :
     QWizardPage(parent)
@@ -19,7 +20,8 @@ AdvancedSearchPage::AdvancedSearchPage(QWidget *parent) :
 
 #ifdef WITH_ZEROCONF
     QCheckBox *zeroconf = new QCheckBox(tr("Search using Zeroconf"));
-    zeroconf->setChecked(true);
+    zeroconf->setChecked(BonjourSearchWorker::available());
+    zeroconf->setEnabled(BonjourSearchWorker::available());
     registerField("zeroconf", zeroconf);
     connect(zeroconf, SIGNAL(stateChanged(int)), SIGNAL(completeChanged()));
 #endif

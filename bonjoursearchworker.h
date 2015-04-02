@@ -16,6 +16,8 @@ class BonjourSearchWorker : public SearchWorker
 public:
     BonjourSearchWorker(const QString &searchServiceType, QObject *parent = 0);
 
+    static bool available();
+
 private slots:
     void updateRecords(const QList<BonjourRecord> &list);
     void recordResolved(const QHostInfo &hostInfo, int port, const QString &txt);

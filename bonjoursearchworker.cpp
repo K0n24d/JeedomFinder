@@ -59,7 +59,7 @@ void BonjourSearchWorker::updateRecords(const QList<BonjourRecord> &list)
 
     foreach (BonjourRecord record, list)
     {
-        qWarning() << Q_FUNC_INFO << record.registeredType << record.serviceName  << record.replyDomain;
+        qDebug() << Q_FUNC_INFO << record.registeredType << record.serviceName  << record.replyDomain;
 
         BonjourServiceResolver *bonjourResolver = new BonjourServiceResolver(this);
 
@@ -115,4 +115,10 @@ void BonjourSearchWorker::recordResolved(const QHostInfo &hostInfo, int port, co
 
     if(bonjourResolvers.isEmpty())
         emit(finished());
+}
+
+bool BonjourSearchWorker::available()
+{
+    QLibrary libdns_sd("dns_sd");
+    return(libdns_sd.load());
 }

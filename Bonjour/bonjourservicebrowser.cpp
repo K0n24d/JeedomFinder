@@ -29,30 +29,46 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "bonjourservicebrowser.h"
 
 #include <QtCore/QSocketNotifier>
+#include <QtDebug>
 
 BonjourServiceBrowser::BonjourServiceBrowser(QObject *parent)
-    : QObject(parent), dnssref(0), bonjourSocket(0)
+    : QObject(parent), dnssref(0), bonjourSocket(0), libdns_sd("dns_sd")
 {
     dnssref=NULL;
     bonjourSocket=NULL;
+    libdns_sd.load();
 }
 
 BonjourServiceBrowser::~BonjourServiceBrowser()
 {
     if (dnssref) {
-        DNSServiceRefDeallocate(dnssref);
+        DNSServiceRefDeallocate pDNSServiceRefDeallocate = (DNSServiceRefDeallocate) libdns_sd.resolve("DNSServiceRefDeallocate");
+        if(pDNSServiceRefDeallocate)
+            pDNSServiceRefDeallocate(dnssref);
+        else
+            qWarning() << Q_FUNC_INFO << "Could not resolve DNSServiceRefDeallocate";
         dnssref = 0;
     }
 }
 
 void BonjourServiceBrowser::browseForServiceType(const QString &serviceType)
 {
-    DNSServiceErrorType err = DNSServiceBrowse(&dnssref, 0, 0, serviceType.toUtf8().constData(), NULL,
+    DNSServiceBrowse pDNSServiceBrowse = (DNSServiceBrowse) libdns_sd.resolve("DNSServiceBrowse");
+    DNSServiceErrorType err = -1;
+    if(pDNSServiceBrowse)
+        err = pDNSServiceBrowse(&dnssref, 0, 0, serviceType.toUtf8().constData(), NULL,
                                                bonjourBrowseReply, this);
+    else
+        qWarning() << Q_FUNC_INFO << "Could not resolve DNSServiceBrowse";
     if (err != kDNSServiceErr_NoError) {
         emit error(err);
     } else {
-        int sockfd = DNSServiceRefSockFD(dnssref);
+        DNSServiceRefSockFD pDNSServiceRefSockFD = (DNSServiceRefSockFD) libdns_sd.resolve("DNSServiceRefSockFD");
+        int sockfd = -1;
+        if(pDNSServiceRefSockFD)
+            sockfd = pDNSServiceRefSockFD(dnssref);
+        else
+            qWarning() << Q_FUNC_INFO << "Could not resolve DNSServiceRefSockFD";
         if (sockfd == -1) {
             emit error(kDNSServiceErr_Invalid);
         } else {
@@ -64,7 +80,12 @@ void BonjourServiceBrowser::browseForServiceType(const QString &serviceType)
 
 void BonjourServiceBrowser::bonjourSocketReadyRead()
 {
-    DNSServiceErrorType err = DNSServiceProcessResult(dnssref);
+    DNSServiceProcessResult pDNSServiceProcessResult = (DNSServiceProcessResult) libdns_sd.resolve("DNSServiceProcessResult");
+    DNSServiceErrorType err = -1;
+    if(pDNSServiceProcessResult)
+        err = pDNSServiceProcessResult(dnssref);
+    else
+        qWarning() << Q_FUNC_INFO << "Could not resolve DNSServiceProcessResult";
     if (err != kDNSServiceErr_NoError)
         emit error(err);
 }

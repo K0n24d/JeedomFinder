@@ -16,6 +16,8 @@ public:
     explicit SearchWorker(QObject *parent = 0);
     ~SearchWorker();
 
+    static bool available();
+
     /*
     struct Host {
         QString name;

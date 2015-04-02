@@ -30,9 +30,9 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define BONJOURSERVICERESOLVER_H
 
 #include <QtCore/QObject>
+#include <QLibrary>
 
-
-#include <dns_sd.h>
+#include <dns_sd_late.h>
 
 class QSocketNotifier;
 class QHostInfo;
@@ -67,6 +67,7 @@ private:
     QString bonjourTXT;
     QString bonjourHostName;
     QString bonjourHostTarget;
+    QLibrary libdns_sd;
 };
 
 #endif // BONJOURSERVICERESOLVER_H

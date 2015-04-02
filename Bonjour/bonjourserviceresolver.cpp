@@ -28,13 +28,15 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <QtCore/QSocketNotifier>
 #include <QtNetwork/QHostInfo>
+#include <QtDebug>
 
 #include "bonjourrecord.h"
 #include "bonjourserviceresolver.h"
 
 BonjourServiceResolver::BonjourServiceResolver(QObject *parent)
-    : QObject(parent), dnssref(0), bonjourSocket(0), bonjourPort(-1)
+    : QObject(parent), dnssref(0), bonjourSocket(0), bonjourPort(-1), libdns_sd("dns_sd")
 {
+    libdns_sd.load();
 }
 
 BonjourServiceResolver::~BonjourServiceResolver()
@@ -45,7 +47,12 @@ BonjourServiceResolver::~BonjourServiceResolver()
 void BonjourServiceResolver::cleanupResolve()
 {
     if (dnssref) {
-        DNSServiceRefDeallocate(dnssref);
+        DNSServiceRefDeallocate pDNSServiceRefDeallocate = (DNSServiceRefDeallocate) libdns_sd.resolve("DNSServiceRefDeallocate");
+        if(pDNSServiceRefDeallocate)
+            pDNSServiceRefDeallocate(dnssref);
+        else
+            qWarning() << Q_FUNC_INFO << "Could not resolve DNSServiceRefDeallocate";
+
         dnssref = 0;
         delete bonjourSocket;
         bonjourPort = -1;
@@ -54,20 +61,35 @@ void BonjourServiceResolver::cleanupResolve()
 
 void BonjourServiceResolver::resolveBonjourRecord(const BonjourRecord &record)
 {
+    qDebug() << Q_FUNC_INFO << record.registeredType << record.replyDomain << record.serviceName;
+
     if (dnssref) {
         qWarning("resolve in process, aborting");
         return;
     }
-    DNSServiceErrorType err = DNSServiceResolve(&dnssref, 0, 0,
+    DNSServiceResolve pDNSServiceResolve = (DNSServiceResolve) libdns_sd.resolve("DNSServiceResolve");
+    DNSServiceErrorType err = -1;
+    if(pDNSServiceResolve)
+        err = pDNSServiceResolve(&dnssref, 0, 0,
                                                 record.serviceName.toUtf8().constData(),
                                                 record.registeredType.toUtf8().constData(),
                                                 record.replyDomain.toUtf8().constData(),
                                                 (DNSServiceResolveReply)bonjourResolveReply, this);
+    else
+        qWarning() << Q_FUNC_INFO << "Could not resolve DNSServiceResolve";
+
     if (err != kDNSServiceErr_NoError) {
+        qDebug() << Q_FUNC_INFO << err;
         emit error(err);
     } else {
-        int sockfd = DNSServiceRefSockFD(dnssref);
+        DNSServiceRefSockFD pDNSServiceRefSockFD = (DNSServiceRefSockFD) libdns_sd.resolve("DNSServiceRefSockFD");
+        int sockfd = -1;
+        if(pDNSServiceRefSockFD)
+            sockfd = pDNSServiceRefSockFD(dnssref);
+        else
+            qWarning() << Q_FUNC_INFO << "Could not resolve DNSServiceRefSockFD";
         if (sockfd == -1) {
+            qDebug() << Q_FUNC_INFO << sockfd;
             emit error(kDNSServiceErr_Invalid);
         } else {
             bonjourSocket = new QSocketNotifier(sockfd, QSocketNotifier::Read, this);
@@ -78,7 +100,13 @@ void BonjourServiceResolver::resolveBonjourRecord(const BonjourRecord &record)
 
 void BonjourServiceResolver::bonjourSocketReadyRead()
 {
-    DNSServiceErrorType err = DNSServiceProcessResult(dnssref);
+    DNSServiceProcessResult pDNSServiceProcessResult = (DNSServiceProcessResult) libdns_sd.resolve("DNSServiceProcessResult");
+    DNSServiceErrorType err = -1;
+    if(pDNSServiceProcessResult)
+        err = pDNSServiceProcessResult(dnssref);
+    else
+        qWarning() << Q_FUNC_INFO << "Could not resolve DNSServiceProcessResult";
+
     if (err != kDNSServiceErr_NoError)
         emit error(err);
 }
@@ -89,8 +117,10 @@ void BonjourServiceResolver::bonjourResolveReply(DNSServiceRef, DNSServiceFlags 
                                     const char *hostname, const char *hosttarget, quint16 port,
                                     quint16 txtLen, const unsigned char *txtRecord, void *context)
 {
+    qDebug() << Q_FUNC_INFO << hostname << hosttarget;
     BonjourServiceResolver *serviceResolver = static_cast<BonjourServiceResolver *>(context);
     if (errorCode != kDNSServiceErr_NoError) {
+        qDebug() << Q_FUNC_INFO << errorCode;
         emit serviceResolver->error(errorCode);
         return;
     }

@@ -54,18 +54,10 @@ zeroconf {
         Bonjour/bonjourserviceresolver.h \
         Bonjour/bonjourservicebrowser.h \
         Bonjour/bonjourrecord.h \
+        Bonjour/dns_sd_late.h \
         bonjoursearchworker.h \
 
     DEFINES+=WITH_ZEROCONF
-
-    linux-g++*:LIBS+=-ldns_sd -lavahi-client -lavahi-common -ldbus-1
-
-    win* {
-        LIBS+=-ldnssd
-        win32:LIBPATH+="C:/Program Files/Bonjour SDK/Lib/Win32"
-        win64:LIBPATH+="C:/Program Files/Bonjour SDK/Lib/Win64"
-        INCLUDEPATH+="C:/Program Files/Bonjour SDK/Include"
-    }
 }
 
 CODECFORSRC = UTF-8
@@ -81,7 +73,7 @@ defineTest(matches) {
     return(false)
   }
 }
- 
+
 static:linux-g++* {
    for(lib, LIBS) {
       # If it's something we don't recognize (neither "-lfoo" nor "-Lfoo") just add it directly

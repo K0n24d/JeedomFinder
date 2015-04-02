@@ -30,7 +30,9 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define BONJOURSERVICEBROWSER_H
 
 #include <QtCore/QObject>
-#include <dns_sd.h>
+#include <QLibrary>
+
+#include <dns_sd_late.h>
 #include "bonjourrecord.h"
 
 class QSocketNotifier;
@@ -59,6 +61,7 @@ private:
     QSocketNotifier *bonjourSocket;
     QList<BonjourRecord> bonjourRecords;
     QString browsingType;
+    QLibrary libdns_sd;
 };
 
 #endif // BONJOURSERVICEBROWSER_H
