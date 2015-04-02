@@ -37,15 +37,15 @@ AdvancedSearchPage::AdvancedSearchPage(QWidget *parent) :
     QGroupBox *optionsRecherche = new QGroupBox(tr("Networks to be scanned with UDP + ARP Cache :"));
     QVBoxLayout *optionsRechercheLayout = new QVBoxLayout();
     optionsRecherche->setLayout(optionsRechercheLayout);
-    foreach(QNetworkInterface interface, QNetworkInterface::allInterfaces())
+    foreach(QNetworkInterface thisInterface, QNetworkInterface::allInterfaces())
     {
-        if(   !interface.flags().testFlag(QNetworkInterface::IsUp)
-           || interface.flags().testFlag(QNetworkInterface::IsLoopBack)
-           || interface.flags().testFlag(QNetworkInterface::IsPointToPoint)
+        if(   !thisInterface.flags().testFlag(QNetworkInterface::IsUp)
+           || thisInterface.flags().testFlag(QNetworkInterface::IsLoopBack)
+           || thisInterface.flags().testFlag(QNetworkInterface::IsPointToPoint)
               )
             continue;
 
-        foreach(QNetworkAddressEntry addressEntry, interface.addressEntries())
+        foreach(QNetworkAddressEntry addressEntry, thisInterface.addressEntries())
         {
             if(addressEntry.ip().protocol()!=QAbstractSocket::IPv4Protocol)
                 continue;
