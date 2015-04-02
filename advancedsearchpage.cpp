@@ -6,7 +6,9 @@
 #include <QtDebug>
 #include <QNetworkInterface>
 #include <QNetworkAddressEntry>
+#ifdef WITH_ZEROCONF
 #include "bonjoursearchworker.h"
+#endif
 
 AdvancedSearchPage::AdvancedSearchPage(QWidget *parent) :
     QWizardPage(parent)
