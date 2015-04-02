@@ -7,6 +7,8 @@
 #
 #-------------------------------------------------
 
+static:DEFINES += HAS_QT_TRANSLATIONS
+
 # var, prepend, append
 defineReplace(prependAll) {
     for(a,$$1):result += $$2$${a}$$3

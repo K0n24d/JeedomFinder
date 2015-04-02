@@ -93,15 +93,15 @@ int main(int argc, char *argv[])
 
 #ifndef QT_NO_TRANSLATION
     QTranslator *translator = new QTranslator(&app);
+#ifdef HAS_QT_TRANSLATIONS
     if(translator->load(QLocale::system(), QLatin1String("qt"), QLatin1String("_"), ":Translations/", QLatin1String(".qm")))
         app.installTranslator(translator);
-    else
-    {
+#else
         QString translatorFileName = QLatin1String("qt_");
         translatorFileName += QLocale::system().name();
         if (translator->load(translatorFileName, QLibraryInfo::location(QLibraryInfo::TranslationsPath)))
             app.installTranslator(translator);
-    }
+#endif
 #endif
 
     QTranslator *jeedomFinderTranslator = new QTranslator(&app);
