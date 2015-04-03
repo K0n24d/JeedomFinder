@@ -58,6 +58,8 @@ zeroconf {
         bonjoursearchworker.h \
 
     DEFINES+=WITH_ZEROCONF
+    unix:DEFINES+=DNS_SD_LIB_NAME=\\\"dns_sd\\\"
+    win*:DEFINES+=DNS_SD_LIB_NAME=\\\"dnssd\\\"
 }
 
 CODECFORSRC = UTF-8

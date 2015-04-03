@@ -119,6 +119,6 @@ void BonjourSearchWorker::recordResolved(const QHostInfo &hostInfo, int port, co
 
 bool BonjourSearchWorker::available()
 {
-    QLibrary libdns_sd("dns_sd");
+    QLibrary libdns_sd(DNS_SD_LIB_NAME);
     return(libdns_sd.load());
 }

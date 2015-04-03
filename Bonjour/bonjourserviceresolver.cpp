@@ -34,7 +34,7 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "bonjourserviceresolver.h"
 
 BonjourServiceResolver::BonjourServiceResolver(QObject *parent)
-    : QObject(parent), dnssref(0), bonjourSocket(0), bonjourPort(-1), libdns_sd("dns_sd")
+    : QObject(parent), dnssref(0), bonjourSocket(0), bonjourPort(-1), libdns_sd(DNS_SD_LIB_NAME)
 {
     libdns_sd.load();
 }

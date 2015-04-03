@@ -32,7 +32,7 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <QtDebug>
 
 BonjourServiceBrowser::BonjourServiceBrowser(QObject *parent)
-    : QObject(parent), dnssref(0), bonjourSocket(0), libdns_sd("dns_sd")
+    : QObject(parent), dnssref(0), bonjourSocket(0), libdns_sd(DNS_SD_LIB_NAME)
 {
     dnssref=NULL;
     bonjourSocket=NULL;
