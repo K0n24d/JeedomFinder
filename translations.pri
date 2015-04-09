@@ -8,6 +8,7 @@
 #-------------------------------------------------
 
 static:DEFINES += HAS_QT_TRANSLATIONS
+mac*:DEFINES += HAS_QT_TRANSLATIONS
 
 # var, prepend, append
 defineReplace(prependAll) {
@@ -56,7 +57,7 @@ for(translationfile, TRANSLATIONS_FILES) {
     RESOURCE_CONTENT += "<file alias=\\\"$$relativepath_out\\\">$$relativepath_out</file>"
 }
 
-static:for(translationfile, QT_TRANSLATIONS_FILES) {
+contains(DEFINES, HAS_QT_TRANSLATIONS):for(translationfile, QT_TRANSLATIONS_FILES) {
     RESOURCE_CONTENT += "<file alias=\\\"Translations/$$translationfile\\\">$$[QT_INSTALL_TRANSLATIONS]/$$translationfile</file>"
 }
 
