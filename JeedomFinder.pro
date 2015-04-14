@@ -4,14 +4,6 @@
 #
 #-------------------------------------------------
 
-#GIT_VERSION = $$system(git --git-dir $$PWD/.git --work-tree $$PWD describe --always --tags)
-#DEFINES += GIT_VERSION=\\\"$$GIT_VERSION\\\"
-#VERSION = $$GIT_VERSION
-#linux {
-#    VERSION ~= s/-\d+-g[a-f0-9]{6,}//
-#    VERSION ~= s/v//
-#}
-#GIT_VERSION = $$VERSION
 include(gitversion.pri)
 
 QT       += core gui network
