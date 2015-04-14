@@ -54,7 +54,8 @@ DEFINES += GIT_VERSION=\\\"$$GIT_VERSION\\\"
 mac* {
     INFO_PLIST_PATH = $$shell_quote($${OUT_PWD}/$${TARGET}.app/Contents/Info.plist)
     QMAKE_POST_LINK += && /usr/libexec/PlistBuddy -c \"Set :CFBundleShortVersionString $${VERSION}\" $${INFO_PLIST_PATH}
-    QMAKE_POST_LINK += && /usr/libexec/PlistBuddy -c \"Set :CFBundleGetInfoString $${GIT_VERSION}\" $${INFO_PLIST_PATH}
+    QMAKE_POST_LINK += ; /usr/libexec/PlistBuddy -c \"Set :CFBundleGetInfoString $${GIT_VERSION}\" $${INFO_PLIST_PATH}
+    QMAKE_POST_LINK += || true
 }
 
 message(GIT_VERSION set to $$GIT_VERSION / VERSION=$$VERSION)
