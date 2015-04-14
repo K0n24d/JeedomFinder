@@ -63,11 +63,12 @@ void myMessageOutput(QtMsgType type, const QMessageLogContext &, const QString &
         break;
     }
 
-    QString fullmsg = QString("%1 %4 JeedomFinder[%2]: %3\n")
+    QString fullmsg = QString("%1 %4 JeedomFinder[%2] (%5): %3\n")
                         .arg(QDateTime::currentDateTime().toString("MMM dd hh:mm:ss.zzz"))
                         .arg((unsigned long)QThread::currentThreadId())
                         .arg(msg)
-                        .arg(level);
+                        .arg(level)
+                        .arg(GIT_VERSION);
 
     if(logFile.isWritable())
     {

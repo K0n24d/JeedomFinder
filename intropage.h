@@ -12,7 +12,7 @@ public:
 signals:
 
 public slots:
-
+    void linkActivated(const QString &link);
 };
 
 #endif // INTROPAGE_H
