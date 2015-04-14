@@ -4,6 +4,7 @@
 #
 #-------------------------------------------------
 
+QMAKE_POST_LINK=true
 include(gitversion.pri)
 
 QT       += core gui network
@@ -106,9 +107,9 @@ static:linux-g++* {
 
 CONFIG(release, debug|release) {
   # UPX Compression on linux (qmake "CONFIG+=upx")
-  upx:linux-g++*:QMAKE_POST_LINK += strip $(TARGET) && upx -k --ultra-brute $(TARGET)
+  upx:linux-g++*:QMAKE_POST_LINK += && strip $(TARGET) && upx -k --ultra-brute $(TARGET)
 
-  mac*:QMAKE_POST_LINK += macdeployqt JeedomFinder.app $(TARGET) -dmg
+  mac*:QMAKE_POST_LINK += && macdeployqt JeedomFinder.app $(TARGET) -dmg
 }
 
 win*:RC_FILE += \
