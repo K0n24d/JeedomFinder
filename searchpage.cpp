@@ -245,7 +245,9 @@ void SearchPage::searchFinished()
     QMutexLocker locker(&searchWorkersMutex);
     SearchWorker* sendingWorker = qobject_cast<SearchWorker*>(sender());
     bool workerConsideredRunning = searchWorkers.contains(sendingWorker);
-    qDebug() << Q_FUNC_INFO << searchWorkers.count() << workerConsideredRunning;
+    qDebug() << Q_FUNC_INFO << "Nb recherches en cours:" << searchWorkers.count()
+             << "Fin de la recherche:" << sendingWorker->metaObject()->className()
+             << "/" << workerConsideredRunning;
 
     if(!workerConsideredRunning)
         return;
