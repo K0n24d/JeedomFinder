@@ -29,6 +29,7 @@ protected:
     void timerEvent(QTimerEvent *event);
     int bonjourBrowseTimeout;
 
+    bool hasFinished();
 public slots:
     void discover();
     void bonjourError(DNSServiceErrorType err);

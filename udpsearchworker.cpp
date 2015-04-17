@@ -164,6 +164,8 @@ void UdpSearchWorker::stop()
 {
     qDebug() << Q_FUNC_INFO;
 
+    stopping = true;
+
     //checkResultsTimer->stop();
 
 #if defined(Q_OS_MAC) || defined(Q_OS_WIN)
@@ -265,9 +267,7 @@ void UdpSearchWorker::gotArpResults(int)
         lookupIDs.insert(QHostInfo::lookupHost(list.at(1), this, SLOT(lookedUp(QHostInfo))), mac);
     }
 
-    if(allRequestsSent && webPagesToCheck<=0 && lookupIDs.isEmpty())
-       emit(finished());
-    else if(!stopping)
+    if(!hasFinished())
         checkResultsTimer->start();
 }
 #endif
@@ -316,9 +316,7 @@ void UdpSearchWorker::checkResults()
     else
         emit(error(Q_FUNC_INFO, tr("Could not open /proc/net/arp: %1").arg(arpTable.errorString())));
 
-    if(allRequestsSent && webPagesToCheck<=0 && lookupIDs.isEmpty())
-       emit(finished());
-    else if(!stopping)
+    if(!hasFinished())
         checkResultsTimer->start();
 }
 #endif
@@ -343,6 +341,19 @@ void UdpSearchWorker::lookedUp(QHostInfo hostInfo)
     checkWebPage(&thisHost,QString("http://%1/").arg(thisHost.name));
     checkWebPage(&thisHost,QString("http://%1/jeedom/").arg(thisHost.name));
 
+    hasFinished();
+}
+
+bool UdpSearchWorker::hasFinished()
+{
+    if(stopping)
+        return true;
+
     if(allRequestsSent && webPagesToCheck<=0 && lookupIDs.isEmpty())
-       emit(finished());
+    {
+        stop();
+        return true;
+    }
+
+    return false;
 }

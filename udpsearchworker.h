@@ -33,6 +33,7 @@ protected:
     QHash<int, QString> lookupIDs;
     QWizard *wizard;
 
+    bool hasFinished();
 protected slots:
     void checkResults();
 #if defined(Q_OS_MAC) || defined(Q_OS_WIN)

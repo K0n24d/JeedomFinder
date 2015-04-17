@@ -33,7 +33,7 @@ void BonjourSearchWorker::discover()
 void BonjourSearchWorker::bonjourError(DNSServiceErrorType err)
 {
     qWarning() << Q_FUNC_INFO << err;
-    emit(finished());
+    stop();
 }
 
 void BonjourSearchWorker::timerEvent(QTimerEvent *event)
@@ -43,7 +43,7 @@ void BonjourSearchWorker::timerEvent(QTimerEvent *event)
     if(event->timerId()==bonjourBrowseTimeout)
     {
         killTimer(bonjourBrowseTimeout);
-        emit(finished());
+        stop();
     }
 }
 
@@ -113,12 +113,25 @@ void BonjourSearchWorker::recordResolved(const QHostInfo &hostInfo, int port, co
 
     resolver->deleteLater();
 
-    if(bonjourResolvers.isEmpty())
-        emit(finished());
+    hasFinished();
 }
 
 bool BonjourSearchWorker::available()
 {
     QLibrary libdns_sd(DNS_SD_LIB_NAME);
     return(libdns_sd.load());
+}
+
+bool BonjourSearchWorker::hasFinished()
+{
+    if(stopping)
+        return true;
+
+    if(bonjourResolvers.isEmpty())
+    {
+        stop();
+        return true;
+    }
+
+    return false;
 }

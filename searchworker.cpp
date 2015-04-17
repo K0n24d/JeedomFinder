@@ -119,23 +119,28 @@ void SearchWorker::replyFinished(QNetworkReply *reply)
         thisHost->deleteLater();
     }
 
-    if(webPagesToCheck<=0 && allRequestsSent)
-    {
-        emit(finished());
-    }
+    hasFinished();
 }
 
 void SearchWorker::checkWebPageTimeout()
 {
     qDebug() << Q_FUNC_INFO;
 
-    if(allRequestsSent)
-    {
-        stop();
-    }
+    hasFinished();
 }
 
 bool SearchWorker::available()
 {
     return true;
+}
+
+bool SearchWorker::hasFinished()
+{
+    if(webPagesToCheck<=0 && allRequestsSent)
+    {
+        stop();
+        return true;
+    }
+
+    return false;
 }

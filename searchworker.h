@@ -38,6 +38,7 @@ protected:
     bool stopping;
     QTimer checkWebPageTimer;
 
+    virtual bool hasFinished();
 signals:
     void finished();
     void error(const QString & title, const QString & message);

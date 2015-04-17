@@ -26,14 +26,13 @@ void DNSLookupSearchWorker::lookedUp(QHostInfo hostInfo)
 {
     qDebug() << Q_FUNC_INFO << hostInfo.hostName().toLower();
 
-    lookupIDs.remove(hostInfo.lookupId());
-
     foreach(QHostAddress address, hostInfo.addresses())
     {
         qDebug() << Q_FUNC_INFO << "Tenter un reverse lookup pour" << address.toString();
         lookupIDs.insert(QHostInfo::lookupHost(address.toString(), this, SLOT(reverseLookedUp(QHostInfo))), hostInfo);
     }
 
+    lookupIDs.remove(hostInfo.lookupId());
     if(lookupIDs.isEmpty())
     {
         allRequestsSent=true;
