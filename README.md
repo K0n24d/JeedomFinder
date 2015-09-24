@@ -5,7 +5,7 @@ Ce logiciel va vous permettre d'accéder facilement à votre box domotique Jeedo
 
 Votre ordinateur doit être sur le même réseau que votre box Jeedom.
 
-[![build status](https://ci.knauber.net/projects/1/status.png?ref=master)](https://ci.knauber.net/projects/1?ref=master)
+[![build status](https://git.knauber.net/ci/projects/1/status.png?ref=master)](https://git.knauber.net/ci/projects/1?ref=master)
 
 Binaires précompilés
 ====================
