@@ -12,21 +12,19 @@ Build Win32:
   - signtool.exe sign /t http://time.certum.pl /a JeedomFinder.exe
   - 7z a -mx=9 JeedomFinder-Win32.zip JeedomFinder.exe
   - popd
-  - git describe --exact-match --tags HEAD > VER.TMPFILE || GOTO :NOTAG
-  - rem IF %errorlevel% NEQ 0 GOTO :NOTAG
+  - git describe --exact-match --tags HEAD > VER.TMPFILE && (
   - SET /p VER= < VER.TMPFILE
   - pushd release
   - c:\Tools\bin\curl -i -F file=@JeedomFinder-Win32.zip %DEPLOY_URL%/%VER%?link=JeedomFinder/JeedomFinder-Win32.zip
   - popd
-  - GOTO :CLEANUP
-  - ":NOTAG"
+  - ) || (
   - git rev-parse --short HEAD > REV.TMPFILE
   - SET /p REV= < REV.TMPFILE
   - DEL REV.TMPFILE
   - pushd release
   - c:\Tools\bin\curl -i -F file=@JeedomFinder-Win32.zip %DEPLOY_URL%/snapshots/%REV%?link=JeedomFinder/snapshots/JeedomFinder-Win32.zip
   - popd
-  - ":CLEANUP"
+  - )
   - DEL VER.TMPFILE
   tags:
   - qt5-static
